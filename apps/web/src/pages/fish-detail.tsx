@@ -1,9 +1,21 @@
-import { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { useEffect, useState } from "react";
+import { Link, useParams } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
-import { Copy, Check, ArrowLeft, ArrowSquareOut, Fish, MapPin, User, ShieldCheck, ImageSquare, IdentificationBadge } from "@phosphor-icons/react";
+import { Button } from "@/components/ui/button";
+import {
+  ArrowLeft,
+  ArrowRight,
+  ArrowSquareOut,
+  Check,
+  Copy,
+  Database,
+  Fish,
+  IdentificationBadge,
+  ImageSquare,
+  MapPin,
+  ShieldCheck,
+  User,
+} from "@phosphor-icons/react";
 
 const API_URL = import.meta.env.VITE_API_URL || "";
 
@@ -27,6 +39,7 @@ interface FishDetailData {
 export default function FishDetail() {
   const { id } = useParams();
   const [fish, setFish] = useState<FishDetailData | null>(null);
+  const [related, setRelated] = useState<FishDetailData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [copiedField, setCopiedField] = useState<string | null>(null);
@@ -43,6 +56,11 @@ export default function FishDetail() {
       .then((data) => {
         setFish(data);
         setLoading(false);
+        return fetch(`${API_URL}/api/search?q=${encodeURIComponent(data.scientificName)}`);
+      })
+      .then((r) => r?.json())
+      .then((data) => {
+        setRelated((data?.results || []).filter((item: FishDetailData) => String(item.id) !== id).slice(0, 4));
       })
       .catch((e) => {
         setError(e.message);
@@ -53,19 +71,19 @@ export default function FishDetail() {
   const copyText = async (text: string, field: string) => {
     await navigator.clipboard.writeText(text);
     setCopiedField(field);
-    setTimeout(() => setCopiedField(null), 2000);
+    setTimeout(() => setCopiedField(null), 1800);
   };
 
   if (loading) {
     return (
       <div className="container py-20">
-        <div className="space-y-4 max-w-5xl mx-auto">
-          <div className="h-6 w-24 skeleton-shimmer rounded-lg" />
-          <div className="aspect-[16/9] skeleton-shimmer rounded-2xl" />
-          <div className="grid md:grid-cols-3 gap-6 mt-8">
-            <div className="h-32 skeleton-shimmer rounded-xl" />
-            <div className="h-32 skeleton-shimmer rounded-xl" />
-            <div className="h-32 skeleton-shimmer rounded-xl" />
+        <div className="space-y-6">
+          <div className="h-8 w-36 rounded-xl skeleton-shimmer" />
+          <div className="aspect-[16/9] rounded-[2rem] skeleton-shimmer" />
+          <div className="grid gap-5 md:grid-cols-4">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="h-32 rounded-3xl skeleton-shimmer" />
+            ))}
           </div>
         </div>
       </div>
@@ -74,12 +92,12 @@ export default function FishDetail() {
 
   if (error || !fish) {
     return (
-      <div className="container py-20">
-        <div className="max-w-lg mx-auto text-center space-y-6">
-          <Fish size={48} className="mx-auto text-muted-foreground/30" weight="light" />
-          <h1 className="text-2xl font-bold tracking-tight">Image not found</h1>
-          <p className="text-muted-foreground">{error || "The requested image does not exist."}</p>
-          <Button asChild variant="outline" className="rounded-xl">
+      <div className="container py-24">
+        <div className="glass-panel mx-auto max-w-lg rounded-3xl p-10 text-center">
+          <Fish size={48} className="mx-auto text-primary/50" weight="light" />
+          <h1 className="mt-5 text-2xl font-bold tracking-tight">Image not found</h1>
+          <p className="mt-2 text-muted-foreground">{error || "The requested image does not exist."}</p>
+          <Button asChild variant="outline" className="mt-6 rounded-xl">
             <Link to="/explore">
               <ArrowLeft size={16} className="mr-2" />
               Back to explore
@@ -97,187 +115,173 @@ export default function FishDetail() {
     { label: "JSON metadata", url: `/fish/id/${fish.id}.json` },
   ];
 
+  const facts = [
+    { label: "Author", value: fish.author, icon: User },
+    { label: "Locality", value: fish.locality, icon: MapPin },
+    { label: "License", value: fish.license, icon: ShieldCheck },
+    {
+      label: "Original size",
+      value: fish.width || fish.height ? `${fish.width || "?"} x ${fish.height || "?"} px` : null,
+      icon: ImageSquare,
+    },
+  ].filter((fact) => fact.value);
+
   return (
-    <div className="container py-10 md:py-14">
-      {/* Back link */}
-      <Link
-        to="/explore"
-        className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-8 group"
-      >
-        <ArrowLeft size={14} className="group-hover:-translate-x-0.5 transition-transform" />
-        Back to explore
-      </Link>
+    <div>
+      <section className="relative overflow-hidden bg-hero-gradient">
+        <div className="absolute inset-0 bg-ocean-pattern pointer-events-none" />
+        <div className="container relative z-10 pt-28 pb-8 md:pt-32 md:pb-12">
+          <Link
+            to="/explore"
+            className="mb-7 inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+          >
+            <ArrowLeft size={15} weight="bold" />
+            Back to explore
+          </Link>
 
-      {/* Hero image */}
-      <div className="relative rounded-2xl overflow-hidden bg-muted border border-border/50 mb-10">
-        <img
-          src={`${API_URL}/fish/id/${fish.id}/1400/900`}
-          alt={fish.scientificName}
-          className="w-full h-auto max-h-[70vh] object-cover"
-          onError={(e) => {
-            (e.target as HTMLImageElement).src =
-              "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='600'%3E%3Crect fill='%23222' width='800' height='600'/%3E%3C/svg%3E";
-          }}
-        />
-      </div>
-
-      {/* Content grid */}
-      <div className="grid lg:grid-cols-3 gap-8 lg:gap-12">
-        {/* Main info */}
-        <div className="lg:col-span-2 space-y-8">
-          <div className="space-y-3">
-            <h1 className="text-3xl md:text-4xl font-bold tracking-tight italic leading-tight">
-              {fish.scientificName}
-            </h1>
-            {fish.commonName && (
-              <p className="text-xl text-muted-foreground">
-                {fish.commonName}
-              </p>
-            )}
-          </div>
-
-          {/* Quick facts */}
-          <div className="grid sm:grid-cols-2 gap-3">
-            {fish.author && (
-              <div className="flex items-center gap-3 rounded-xl bg-surface-subtle border border-border/50 p-4">
-                <div className="rounded-lg bg-primary/10 p-2 shrink-0">
-                  <User size={16} weight="bold" className="text-primary" />
-                </div>
-                <div className="min-w-0">
-                  <p className="text-xs text-muted-foreground">Author</p>
-                  <p className="text-sm font-medium truncate">{fish.author}</p>
-                </div>
-              </div>
-            )}
-            {fish.locality && (
-              <div className="flex items-center gap-3 rounded-xl bg-surface-subtle border border-border/50 p-4">
-                <div className="rounded-lg bg-primary/10 p-2 shrink-0">
-                  <MapPin size={16} weight="bold" className="text-primary" />
-                </div>
-                <div className="min-w-0">
-                  <p className="text-xs text-muted-foreground">Locality</p>
-                  <p className="text-sm font-medium truncate">{fish.locality}</p>
-                </div>
-              </div>
-            )}
-            {fish.license && (
-              <div className="flex items-center gap-3 rounded-xl bg-surface-subtle border border-border/50 p-4">
-                <div className="rounded-lg bg-primary/10 p-2 shrink-0">
-                  <ShieldCheck size={16} weight="bold" className="text-primary" />
-                </div>
-                <div className="min-w-0">
-                  <p className="text-xs text-muted-foreground">License</p>
-                  <Badge variant="secondary" className="text-xs rounded-full mt-0.5">
-                    {fish.license}
-                  </Badge>
-                </div>
-              </div>
-            )}
-            {(fish.width ?? fish.height) && (
-              <div className="flex items-center gap-3 rounded-xl bg-surface-subtle border border-border/50 p-4">
-                <div className="rounded-lg bg-primary/10 p-2 shrink-0">
-                  <ImageSquare size={16} weight="bold" className="text-primary" />
-                </div>
-                <div className="min-w-0">
-                  <p className="text-xs text-muted-foreground">Original size</p>
-                  <p className="text-sm font-medium">
-                    {fish.width} x {fish.height} px
-                  </p>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Source link */}
-          {fish.sourcePageUrl && (
-            <div className="rounded-xl border border-border/50 bg-surface-subtle p-4 space-y-2">
-              <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">
-                Source
-              </p>
-              <a
-                href={fish.sourcePageUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-sm text-primary hover:underline inline-flex items-center gap-1.5"
-              >
-                {fish.sourcePageUrl}
-                <ArrowSquareOut size={12} weight="bold" />
-              </a>
+          <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-end">
+            <div>
+              <p className="section-kicker mb-3">Species record</p>
+              <h1 className="display-title text-5xl italic md:text-7xl">{fish.scientificName}</h1>
+              {fish.commonName && <p className="mt-5 text-xl text-muted-foreground">{fish.commonName}</p>}
             </div>
-          )}
-        </div>
-
-        {/* Sidebar */}
-        <div className="space-y-6">
-          {/* Image ID card */}
-          <Card className="border-border/50 shadow-card-glow">
-            <CardContent className="p-5 space-y-4">
-              <div className="flex items-center gap-2">
-                <IdentificationBadge size={16} weight="bold" className="text-primary" />
-                <span className="text-sm font-medium">Image ID</span>
-                <span className="ml-auto text-sm font-mono text-muted-foreground">
-                  #{fish.id}
-                </span>
-              </div>
-              {fish.speciesId && (
-                <div className="flex items-center gap-2 pt-2 border-t border-border/30">
-                  <Fish size={16} weight="bold" className="text-primary" />
-                  <span className="text-sm font-medium">Species ID</span>
-                  <span className="ml-auto text-sm font-mono text-muted-foreground">
-                    {fish.speciesId}
-                  </span>
+            <div className="glass-panel rounded-3xl p-5">
+              <div className="flex items-center gap-3">
+                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                  <IdentificationBadge size={22} weight="bold" />
                 </div>
-              )}
-            </CardContent>
-          </Card>
+                <div>
+                  <p className="text-xs text-muted-foreground">Image ID</p>
+                  <p className="font-mono text-lg font-semibold">#{fish.id}</p>
+                </div>
+                {fish.speciesId && (
+                  <Badge variant="secondary" className="ml-auto rounded-md font-mono">
+                    {fish.speciesId}
+                  </Badge>
+                )}
+              </div>
+            </div>
+          </div>
 
-          {/* Copy URLs */}
-          <Card className="border-border/50 shadow-card-glow">
-            <CardContent className="p-5 space-y-3">
-              <h3 className="text-sm font-medium">API URLs</h3>
+          <div className="mt-8 overflow-hidden rounded-[2rem] bg-muted shadow-card-glow">
+            <img
+              src={`${API_URL}/fish/id/${fish.id}/1600/1000`}
+              alt={fish.scientificName}
+              className="h-auto max-h-[76vh] w-full object-cover"
+              onError={(e) => {
+                (e.target as HTMLImageElement).src =
+                  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1200' height='800'%3E%3Crect fill='%2306283D' width='1200' height='800'/%3E%3C/svg%3E";
+              }}
+            />
+          </div>
+        </div>
+      </section>
+
+      <section className="container py-12 md:py-16">
+        <div className="grid gap-8 lg:grid-cols-[1fr_380px]">
+          <main className="space-y-10">
+            <div className="grid gap-4 sm:grid-cols-2">
+              {facts.map((fact) => (
+                <div key={fact.label} className="glass-panel rounded-3xl p-5">
+                  <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                    <fact.icon size={19} weight="bold" />
+                  </div>
+                  <p className="text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground">{fact.label}</p>
+                  <p className="mt-2 text-base font-semibold">{fact.value}</p>
+                </div>
+              ))}
+            </div>
+
+            <article className="max-w-3xl space-y-5">
+              <p className="section-kicker">Editorial context</p>
+              <h2 className="display-title text-4xl md:text-5xl">A photograph with useful data attached.</h2>
+              <p className="text-lg leading-8 text-muted-foreground">
+                Use this image in mockups, scientific interfaces, education tools, or content systems, then pull the metadata endpoint when your product needs attribution and species context.
+              </p>
+              {fish.sourcePageUrl && (
+                <a
+                  href={fish.sourcePageUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 text-sm font-medium text-primary hover:text-foreground"
+                >
+                  View original source
+                  <ArrowSquareOut size={14} weight="bold" />
+                </a>
+              )}
+            </article>
+
+            {related.length > 0 && (
+              <div className="space-y-5">
+                <div className="flex items-end justify-between gap-4">
+                  <div>
+                    <p className="section-kicker mb-2">Related</p>
+                    <h2 className="text-2xl font-semibold tracking-tight">More from this species</h2>
+                  </div>
+                  <Button asChild variant="outline" className="rounded-xl">
+                    <Link to={`/explore?species=${encodeURIComponent(fish.scientificName)}`}>
+                      View all
+                      <ArrowRight size={14} weight="bold" className="ml-2" />
+                    </Link>
+                  </Button>
+                </div>
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                  {related.map((item) => (
+                    <Link key={item.id} to={`/fish/${item.id}`} className="group overflow-hidden rounded-3xl bg-muted shadow-card-glow">
+                      <img src={`${API_URL}${item.url}`} alt={item.scientificName} className="aspect-[4/5] w-full object-cover transition duration-500 group-hover:scale-105" />
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
+          </main>
+
+          <aside className="space-y-5 lg:sticky lg:top-24 lg:self-start">
+            <div className="glass-panel rounded-3xl p-5">
+              <div className="mb-4 flex items-center gap-2 font-semibold">
+                <Database size={18} weight="bold" className="text-primary" />
+                API endpoints
+              </div>
               <div className="space-y-2">
                 {copyUrls.map(({ label, url }) => (
-                  <div
-                    key={label}
-                    className="flex items-center gap-2 rounded-xl bg-muted border border-border/30 px-3 py-2.5 group"
-                  >
-                    <Badge
-                      variant="outline"
-                      className="text-xs font-mono shrink-0 rounded-md bg-background"
-                    >
-                      {label}
-                    </Badge>
-                    <code className="flex-1 text-xs font-mono truncate text-muted-foreground">
-                      {url}
-                    </code>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-6 w-6 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg"
-                      onClick={() => copyText(`${API_URL}${url}`, label)}
-                      aria-label={`Copy ${label}`}
-                    >
-                      {copiedField === label ? (
-                        <Check size={11} className="text-green-600" />
-                      ) : (
-                        <Copy size={11} />
-                      )}
-                    </Button>
+                  <div key={label} className="group rounded-2xl border border-border/50 bg-background/55 p-3">
+                    <div className="mb-2 flex items-center justify-between gap-2">
+                      <Badge variant="outline" className="rounded-md bg-background font-mono text-[11px]">
+                        {label}
+                      </Badge>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-7 w-7 rounded-lg opacity-80 transition-opacity group-hover:opacity-100"
+                        onClick={() => copyText(`${API_URL}${url}`, label)}
+                        aria-label={`Copy ${label}`}
+                      >
+                        {copiedField === label ? <Check size={12} className="text-emerald-500" /> : <Copy size={12} />}
+                      </Button>
+                    </div>
+                    <code className="block truncate font-mono text-xs text-muted-foreground">{url}</code>
                   </div>
                 ))}
               </div>
-            </CardContent>
-          </Card>
+            </div>
 
-          {/* Species link */}
-          <Button asChild variant="outline" size="sm" className="w-full rounded-xl">
-            <Link to={`/explore?species=${encodeURIComponent(fish.scientificName)}`}>
-              <ArrowSquareOut size={14} weight="bold" className="mr-2" />
-              View all {fish.scientificName} images
-            </Link>
-          </Button>
+            <pre className="premium-code overflow-x-auto rounded-3xl border p-5 text-xs leading-6">{`{
+  "id": ${fish.id},
+  "scientificName": "${fish.scientificName}",
+  "commonName": ${fish.commonName ? `"${fish.commonName}"` : "null"},
+  "license": ${fish.license ? `"${fish.license}"` : "null"},
+  "metadataUrl": "${fish.metadataUrl}"
+}`}</pre>
+
+            <Button asChild className="w-full rounded-xl">
+              <Link to={`/explore?species=${encodeURIComponent(fish.scientificName)}`}>
+                Explore this species
+                <ArrowRight size={15} weight="bold" className="ml-2" />
+              </Link>
+            </Button>
+          </aside>
         </div>
-      </div>
+      </section>
     </div>
   );
 }

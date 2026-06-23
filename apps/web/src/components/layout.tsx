@@ -1,7 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/hooks/use-theme";
-import { Sun, Moon, Fish, List, X } from "@phosphor-icons/react";
+import { Sun, Moon, Fish, List, X, ArrowRight, Waves, Code } from "@phosphor-icons/react";
 import { useState } from "react";
 
 const navLinks = [
@@ -17,29 +17,36 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
-      <header className="sticky top-0 z-50 w-full border-b border-border/50 bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex h-16 items-center justify-between">
+    <div className="ocean-shell min-h-screen flex flex-col bg-background">
+      <div className="noise-overlay" />
+      <header className="fixed inset-x-0 top-0 z-50 w-full px-3 py-3">
+        <div className="container">
+          <div className="glass-panel flex h-16 items-center justify-between rounded-2xl px-3.5 md:px-5">
           <Link
             to="/"
-            className="flex items-center gap-2.5 font-bold text-xl tracking-tight group"
+            className="group flex items-center gap-3"
           >
-            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary/10 text-primary group-hover:bg-primary/15 transition-colors">
+            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#06283D] text-white shadow-[0_14px_36px_rgba(6,40,61,0.24)] transition-transform group-hover:-translate-y-0.5 dark:bg-[#47B5FF] dark:text-[#06283D]">
               <Fish size={18} weight="fill" />
             </div>
-            <span className="font-semibold">ikanhub</span>
+            <div className="leading-none">
+              <span className="block text-base font-semibold tracking-tight">IkanHub</span>
+              <span className="hidden text-[11px] font-medium text-muted-foreground sm:block">
+                Fish images and metadata
+              </span>
+            </div>
           </Link>
 
           {/* Desktop nav */}
-          <nav className="hidden md:flex items-center gap-1">
+          <nav className="hidden items-center gap-1 rounded-2xl border border-border/50 bg-muted/45 p-1 md:flex">
             {navLinks.map((link) => (
               <Link
                 key={link.to}
                 to={link.to}
-                className={`px-3 py-2 text-sm font-medium rounded-lg transition-all ${
+                className={`rounded-xl px-3.5 py-2 text-sm font-medium transition-all ${
                   location.pathname === link.to
-                    ? "text-primary bg-primary/10"
-                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                    ? "bg-background text-foreground shadow-sm"
+                    : "text-muted-foreground hover:bg-background/60 hover:text-foreground"
                 }`}
               >
                 {link.label}
@@ -47,13 +54,19 @@ export function Layout({ children }: { children: React.ReactNode }) {
             ))}
           </nav>
 
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1.5">
+            <Button asChild size="sm" className="hidden rounded-xl md:inline-flex">
+              <Link to="/docs">
+                <Code size={14} weight="bold" className="mr-1.5" />
+                API
+              </Link>
+            </Button>
             <Button
               variant="ghost"
               size="icon"
               onClick={toggleTheme}
               aria-label="Toggle theme"
-              className="rounded-lg"
+              className="rounded-xl"
             >
               {theme === "dark" ? (
                 <Sun size={18} weight="bold" />
@@ -64,27 +77,28 @@ export function Layout({ children }: { children: React.ReactNode }) {
             <Button
               variant="ghost"
               size="icon"
-              className="md:hidden rounded-lg"
+              className="md:hidden rounded-xl"
               onClick={() => setMobileOpen(!mobileOpen)}
               aria-label="Toggle menu"
             >
               {mobileOpen ? <X size={18} /> : <List size={18} />}
             </Button>
           </div>
+          </div>
         </div>
 
         {/* Mobile nav */}
         {mobileOpen && (
-          <div className="md:hidden border-t border-border/50 bg-background/95 backdrop-blur-xl">
-            <div className="container py-4 flex flex-col gap-1">
+          <div className="container md:hidden">
+            <div className="glass-panel mt-2 flex flex-col gap-1 rounded-2xl p-2">
               {navLinks.map((link) => (
                 <Link
                   key={link.to}
                   to={link.to}
                   onClick={() => setMobileOpen(false)}
-                  className={`px-3 py-2.5 text-sm font-medium rounded-lg transition-all ${
+                  className={`px-3 py-2.5 text-sm font-medium rounded-xl transition-all ${
                     location.pathname === link.to
-                      ? "text-primary bg-primary/10"
+                      ? "text-foreground bg-primary/10"
                       : "text-muted-foreground hover:text-foreground hover:bg-muted"
                   }`}
                 >
@@ -96,22 +110,30 @@ export function Layout({ children }: { children: React.ReactNode }) {
         )}
       </header>
 
-      <main className="flex-1">{children}</main>
+      <main className="relative z-10 flex-1">{children}</main>
 
-      <footer className="border-t border-border/50 bg-surface-subtle">
+      <footer className="relative z-10 border-t border-border/50 bg-surface-subtle/80 overflow-hidden">
+        <div className="absolute inset-0 bg-ocean-pattern opacity-70 pointer-events-none" />
         <div className="container py-12 md:py-16">
-          <div className="grid md:grid-cols-4 gap-8">
+          <div className="relative grid md:grid-cols-4 gap-8">
             {/* Brand */}
             <div className="md:col-span-2 space-y-4">
               <Link to="/" className="flex items-center gap-2.5 font-bold text-lg tracking-tight">
-                <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-primary/10 text-primary">
+                <div className="flex items-center justify-center w-8 h-8 rounded-xl bg-[linear-gradient(135deg,#06283D,#1363DF_55%,#47B5FF)] text-white">
                   <Fish size={16} weight="fill" />
                 </div>
-                <span>ikanhub</span>
+                <span>IkanHub</span>
               </Link>
-              <p className="text-sm text-muted-foreground leading-relaxed max-w-sm">
-                Fish placeholder images for developers. Simple URLs, fast responses, no registration required.
+              <p className="text-sm text-muted-foreground leading-relaxed max-w-md">
+                The largest fish image and fish metadata platform. Discover fish. Build with data.
               </p>
+              <Link
+                to="/docs"
+                className="inline-flex items-center gap-2 text-sm font-medium text-primary hover:text-foreground transition-colors"
+              >
+                Start with the API
+                <ArrowRight size={14} weight="bold" />
+              </Link>
             </div>
 
             {/* Links */}
@@ -156,16 +178,23 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 >
                   Documentation
                 </Link>
+                <Link
+                  to="/explore"
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  Image collection
+                </Link>
               </div>
             </div>
           </div>
 
-          <div className="mt-12 pt-8 border-t border-border/50 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-muted-foreground">
-            <p>
+          <div className="relative mt-12 pt-8 border-t border-border/50 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-muted-foreground">
+            <p className="inline-flex items-center gap-2">
+              <Waves size={14} className="text-primary" />
               Not affiliated with FishBase. Images are used with attribution.
             </p>
             <p>
-              Built with fish in mind.
+              Ocean photography for software builders.
             </p>
           </div>
         </div>

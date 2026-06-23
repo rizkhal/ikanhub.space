@@ -5,29 +5,32 @@ import { ArrowRight, Image, Fish, Code, Globe, BookOpenText, ShieldCheck } from 
 
 export default function About() {
   return (
-    <div className="container py-12 md:py-16 max-w-4xl space-y-16">
+    <div>
       {/* Header */}
-      <section className="max-w-3xl">
-        <div className="flex items-center gap-2 mb-4">
-          <Fish size={20} weight="bold" className="text-primary" />
-          <span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-            About
-          </span>
+      <section className="relative overflow-hidden bg-hero-gradient">
+        <div className="absolute inset-0 bg-ocean-pattern pointer-events-none" />
+        <div className="container relative z-10 pt-28 pb-14 md:pt-32 md:pb-20">
+          <div className="max-w-4xl">
+            <div className="flex items-center gap-2 mb-4">
+              <Fish size={20} weight="bold" className="text-primary" />
+              <span className="section-kicker">About</span>
+            </div>
+            <h1 className="display-title text-5xl md:text-7xl">
+              The home of fish images and metadata.
+            </h1>
+            <p className="mt-6 max-w-2xl text-lg text-muted-foreground leading-8">
+              IkanHub combines ocean photography, biological metadata, and developer-friendly endpoints for products that need more than generic placeholders.
+            </p>
+          </div>
         </div>
-        <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">
-          About Ikanhub
-        </h1>
-        <p className="text-lg text-muted-foreground leading-relaxed">
-          Ikanhub is a free placeholder image service for developers, providing
-          beautiful fish photos through simple URLs. We believe fish imagery
-          should be accessible to everyone building on the web.
-        </p>
       </section>
+
+      <div className="container py-12 md:py-16 max-w-5xl space-y-16">
 
       {/* What is Ikanhub */}
       <section className="grid lg:grid-cols-5 gap-8 lg:gap-12 items-start">
         <div className="lg:col-span-3 space-y-4">
-          <h2 className="text-2xl font-bold tracking-tight">What is Ikanhub?</h2>
+          <h2 className="text-3xl font-bold tracking-tight">What is IkanHub?</h2>
           <div className="space-y-4 text-muted-foreground leading-relaxed">
             <p>
               Inspired by{" "}
@@ -39,19 +42,19 @@ export default function About() {
               >
                 Picsum Photos
               </a>
-              , Ikanhub provides a developer-friendly API for fish placeholder
+              , IkanHub provides a developer-friendly API for fish placeholder
               images. Specify the dimensions in the URL and get a perfectly
               resized, center-cropped JPEG image. No registration, no API keys.
             </p>
             <p>
-              The name Ikanhub combines "Ikan" (fish in Indonesian and Malay) with
+              The name IkanHub combines "Ikan" (fish in Indonesian and Malay) with
               "hub", reflecting our mission to be the central hub for fish imagery
               in development workflows.
             </p>
           </div>
         </div>
         <div className="lg:col-span-2">
-          <div className="rounded-2xl overflow-hidden bg-muted border border-border/50 aspect-[4/3]">
+          <div className="overflow-hidden rounded-3xl bg-muted shadow-card-glow aspect-[4/3]">
             <img
               src={`${import.meta.env.VITE_API_URL || ""}/fish/600/450?t=about`}
               alt="Random fish from the collection"
@@ -67,7 +70,7 @@ export default function About() {
       {/* Data Sources */}
       <section className="space-y-6">
         <h2 className="text-2xl font-bold tracking-tight">Data Sources</h2>
-        <Card className="border-border/50 shadow-card-glow">
+        <Card className="glass-panel rounded-3xl">
           <CardContent className="p-6 md:p-8 space-y-4 text-muted-foreground leading-relaxed">
             <p>
               Our primary image source is the{" "}
@@ -95,7 +98,7 @@ export default function About() {
       {/* Attribution and Licensing */}
       <section className="space-y-6">
         <h2 className="text-2xl font-bold tracking-tight">Attribution and Licensing</h2>
-        <Card className="border-primary/20 bg-primary/5 border-border/50 shadow-card-glow">
+        <Card className="glass-panel rounded-3xl border-primary/20 bg-primary/5">
           <CardContent className="p-6 md:p-8 space-y-4">
             <div className="flex items-start gap-3">
               <ShieldCheck size={20} weight="bold" className="text-primary shrink-0 mt-0.5" />
@@ -149,7 +152,7 @@ export default function About() {
               desc: "Simple REST endpoints for any language or framework.",
             },
           ].map((feature) => (
-            <Card key={feature.title} className="border-border/50 shadow-card-glow card-elevate">
+            <Card key={feature.title} className="glass-panel rounded-3xl card-elevate">
               <CardContent className="p-5 space-y-3">
                 <div className="rounded-xl bg-primary/10 w-10 h-10 flex items-center justify-center">
                   <feature.icon size={18} weight="bold" className="text-primary" />
@@ -165,7 +168,7 @@ export default function About() {
       {/* Technical Details */}
       <section className="space-y-6">
         <h2 className="text-2xl font-bold tracking-tight">Technical Details</h2>
-        <Card className="border-border/50 shadow-card-glow">
+        <Card className="glass-panel rounded-3xl">
           <CardContent className="p-6 md:p-8 space-y-4 text-sm text-muted-foreground leading-relaxed">
             <div className="grid sm:grid-cols-2 gap-4">
               <div className="rounded-xl bg-surface-subtle border border-border/30 p-4">
@@ -190,10 +193,10 @@ export default function About() {
       </section>
 
       {/* CTA */}
-      <Card className="relative overflow-hidden border-none">
+      <Card className="relative overflow-hidden rounded-[2rem] border-none">
         <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary/90 to-primary/80" />
         <div className="relative z-10 p-10 md:p-14 text-center space-y-5">
-          <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-white">
+          <h2 className="display-title text-4xl md:text-5xl text-white">
             Ready to get started?
           </h2>
           <p className="text-white/80 max-w-md mx-auto leading-relaxed">
@@ -216,6 +219,7 @@ export default function About() {
           </div>
         </div>
       </Card>
+      </div>
     </div>
   );
 }

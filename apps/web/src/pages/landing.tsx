@@ -1,33 +1,33 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import type { CSSProperties } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
-  Shuffle,
-  ArrowsOut,
-  Tag,
-  Code,
-  Terminal,
-  Copy,
-  Check,
   ArrowRight,
-  Image,
-  Fish,
-  Clock,
+  ArrowsOut,
+  Check,
+  Code,
+  Copy,
   Database,
-  Globe,
+  Fish,
   FishSimple,
-  Waveform,
+  GlobeHemisphereWest,
+  Image,
+  Lightning,
+  Shuffle,
+  Sparkle,
+  TerminalWindow,
+  Waves,
 } from "@phosphor-icons/react";
 
 const API_URL = import.meta.env.VITE_API_URL || "";
 
 export default function Landing() {
-  const [width, setWidth] = useState("800");
-  const [height, setHeight] = useState("600");
-  const [copied, setCopied] = useState(false);
+  const [width, setWidth] = useState("1200");
+  const [height, setHeight] = useState("760");
+  const [copied, setCopied] = useState("");
   const [liveImgKey, setLiveImgKey] = useState(0);
   const [stats, setStats] = useState({
     totalImages: 0,
@@ -55,552 +55,364 @@ export default function Landing() {
       .catch(() => {});
   }, [liveImgKey]);
 
-  const generatedUrl =
-    width && height ? `/fish/${width}/${height}` : "/fish/800/600";
-
+  const generatedUrl = width && height ? `/fish/${width}/${height}` : "/fish/1200/760";
   const fullUrl = `${API_URL}${generatedUrl}`;
 
-  const copyToClipboard = async (text: string) => {
+  const copyToClipboard = async (text: string, key = "url") => {
     try {
       await navigator.clipboard.writeText(text);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      setCopied(key);
+      setTimeout(() => setCopied(""), 1800);
     } catch {}
   };
-
-  const refreshPreview = () => setLiveImgKey((k) => k + 1);
 
   const codeExamples = [
     {
       label: "HTML",
-      code: `<img src="${fullUrl}" alt="Fish photo" width="${width || 800}" height="${height || 600}" />`,
+      code: `<img src="${fullUrl}" alt="Fish image from IkanHub" />`,
     },
     {
-      label: "CSS",
-      code: `.hero {
-  background: url("${fullUrl}");
-  background-size: cover;
+      label: "React",
+      code: `export function Cover() {
+  return <img src="${fullUrl}" alt="Marine species" />;
 }`,
     },
     {
       label: "curl",
-      code: `curl -o fish.jpg "${fullUrl}"`,
+      code: `curl -L "${fullUrl}" -o fish.jpg`,
     },
     {
-      label: "JavaScript",
-      code: `const data = await fetch("${API_URL}/fish/random.json")
-  .then(r => r.json());
-console.log(data.scientificName);`,
+      label: "JSON",
+      code: `const fish = await fetch("${API_URL}/fish/random.json")
+  .then((response) => response.json());`,
     },
   ];
 
   return (
     <div>
-      {/* Hero */}
       <section className="relative overflow-hidden bg-hero-gradient">
-        {/* Subtle ocean pattern */}
         <div className="absolute inset-0 bg-ocean-pattern pointer-events-none" />
-        <div className="container pt-20 pb-24 md:pt-24 md:pb-32 relative z-10">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            {/* Left: Text content */}
-            <div className="space-y-8">
-              <Badge
-                variant="secondary"
-                className="text-xs px-4 py-1.5 rounded-full font-mono tracking-wider inline-flex"
-              >
-                <Waveform size={12} className="mr-1.5" weight="fill" />
-                Free fish placeholder image API
+        <div className="container relative z-10 pt-28 pb-24 md:pt-32 md:pb-32">
+          <div className="grid lg:grid-cols-[0.9fr_1.1fr] gap-12 lg:gap-16 items-center">
+            <div className="space-y-8 animate-fade-up">
+              <Badge className="rounded-md border-primary/15 bg-primary/10 px-3 py-1.5 text-primary hover:bg-primary/10">
+                <Waves size={14} weight="bold" className="mr-2" />
+                The fish image and metadata platform
               </Badge>
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tighter leading-[1.1] text-balance">
-                Beautiful fish placeholder images for{" "}
-                <span className="text-primary">developers</span>
-              </h1>
-              <p className="text-lg md:text-xl text-muted-foreground max-w-xl leading-relaxed">
-                Generate random fish images by size, species, or ID.
-                Simple URLs, fast responses, and metadata included.
-              </p>
-              <div className="flex flex-wrap items-center gap-3">
-                <Button asChild size="lg" className="rounded-xl h-12 px-6">
+              <div className="space-y-6">
+                <h1 className="display-title text-5xl md:text-7xl xl:text-8xl">
+                  Discover fish.
+                  <span className="block text-primary">Build with data.</span>
+                </h1>
+                <p className="max-w-xl text-lg md:text-xl leading-8 text-muted-foreground">
+                  IkanHub brings ocean photography, species metadata, and developer-ready image URLs into one fast API.
+                </p>
+              </div>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <Button asChild size="lg" className="h-12 rounded-xl px-6 shadow-[0_16px_40px_rgba(19,99,223,0.26)]">
                   <Link to="/docs">
                     Try the API
                     <ArrowRight size={16} weight="bold" className="ml-2" />
                   </Link>
                 </Button>
-                <Button asChild variant="outline" size="lg" className="rounded-xl h-12 px-6">
+                <Button asChild variant="outline" size="lg" className="h-12 rounded-xl border-primary/20 bg-background/50 px-6 backdrop-blur">
                   <Link to="/explore">
-                    <Image size={16} className="mr-2" />
-                    Explore Images
+                    <Image size={16} weight="bold" className="mr-2" />
+                    Explore images
                   </Link>
                 </Button>
               </div>
+              <div className="grid grid-cols-3 gap-3 max-w-lg pt-2">
+                {[
+                  ["Images", stats.totalImages],
+                  ["Species", stats.totalSpecies],
+                  ["Endpoints", stats.endpoints.length || 8],
+                ].map(([label, value]) => (
+                  <div key={label} className="glass-panel rounded-2xl px-4 py-3">
+                    <div className="font-mono text-2xl font-semibold tracking-tight">
+                      {Number(value).toLocaleString()}
+                    </div>
+                    <div className="text-xs text-muted-foreground">{label}</div>
+                  </div>
+                ))}
+              </div>
             </div>
 
-            {/* Right: Interactive preview */}
-            <div className="relative">
-              <Card className="overflow-hidden shadow-glow-lg border-border/50">
-                <CardContent className="p-4 md:p-6 space-y-4">
-                  {/* Image preview */}
-                  <div className="aspect-[4/3] rounded-xl overflow-hidden bg-muted relative group">
-                    <img
-                      key={liveImgKey}
-                      src={`${fullUrl}?t=${Date.now()}`}
-                      alt="Fish placeholder preview"
-                      className="w-full h-full object-cover transition-opacity duration-300"
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).src =
-                          "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300'%3E%3Crect fill='%23222' width='400' height='300'/%3E%3Ctext x='200' y='150' text-anchor='middle' fill='%23666' font-size='14' font-family='monospace'%3Eno image loaded%3C/text%3E%3C/svg%3E";
-                      }}
-                    />
-                    {randomFish && (
-                      <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                        <p className="text-white text-xs font-medium">
-                          <em>{randomFish.scientificName}</em>
-                        </p>
-                        {randomFish.commonName && (
-                          <p className="text-white/70 text-xs">{randomFish.commonName}</p>
-                        )}
-                      </div>
-                    )}
-                  </div>
+            <div className="relative min-h-[580px] animate-fade-up animate-fade-up-delay-2">
+              <div className="absolute -right-8 top-4 z-20 hidden w-48 rounded-2xl glass-panel p-4 shadow-card-glow md:block float-card" style={{ "--float-rotate": "3deg" } as CSSProperties}>
+                <p className="text-xs text-muted-foreground">Live metadata</p>
+                <p className="mt-1 text-sm font-semibold italic">{randomFish?.scientificName || "Chaetodon lunula"}</p>
+                <p className="text-xs text-muted-foreground">{randomFish?.commonName || "Blue tang"}</p>
+              </div>
+              <div className="absolute -left-4 bottom-24 z-20 hidden rounded-2xl premium-code border p-4 text-xs md:block float-card-delay" style={{ "--float-rotate": "-2deg" } as CSSProperties}>
+                <div className="mb-2 flex items-center gap-2 text-cyan-200">
+                  <TerminalWindow size={14} weight="bold" />
+                  <span className="font-mono">GET {generatedUrl}</span>
+                </div>
+                <pre className="font-mono text-cyan-50/78">{`{
+  "width": ${width || 1200},
+  "height": ${height || 760},
+  "format": "jpeg"
+}`}</pre>
+              </div>
 
-                  {/* Controls */}
-                  <div className="grid grid-cols-2 gap-3">
+              <div className="glass-panel relative overflow-hidden rounded-[2rem] p-3 md:p-4">
+                <div className="relative aspect-[4/3] overflow-hidden rounded-[1.45rem] bg-muted">
+                  <img
+                    key={liveImgKey}
+                    src={`${fullUrl}?t=${liveImgKey}`}
+                    alt="Live generated fish image preview"
+                    className="h-full w-full object-cover transition duration-700 hover:scale-105"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src =
+                        "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='900' height='680'%3E%3Crect fill='%2306283D' width='900' height='680'/%3E%3Ctext x='450' y='340' text-anchor='middle' fill='%2347B5FF' font-size='22' font-family='monospace'%3Eimage preview%3C/text%3E%3C/svg%3E";
+                    }}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#06283D]/80 via-[#06283D]/10 to-transparent" />
+                  <div className="absolute bottom-5 left-5 right-5 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                     <div>
-                      <label className="text-xs font-medium mb-1.5 block text-muted-foreground">
-                        Width
-                      </label>
-                      <input
-                        type="number"
-                        value={width}
-                        onChange={(e) => setWidth(e.target.value)}
-                        min="1"
-                        max="3000"
-                        className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-ring transition-shadow"
-                      />
+                      <p className="text-xs font-medium uppercase tracking-[0.2em] text-white/60">Generated image</p>
+                      <p className="mt-1 text-xl font-semibold text-white">Visual API preview</p>
                     </div>
-                    <div>
-                      <label className="text-xs font-medium mb-1.5 block text-muted-foreground">
-                        Height
-                      </label>
-                      <input
-                        type="number"
-                        value={height}
-                        onChange={(e) => setHeight(e.target.value)}
-                        min="1"
-                        max="3000"
-                        className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-ring transition-shadow"
-                      />
-                    </div>
-                  </div>
-
-                  {/* URL display */}
-                  <div>
-                    <label className="text-xs font-medium mb-1.5 block text-muted-foreground">
-                      Generated URL
-                    </label>
-                    <div className="flex items-center gap-2">
-                      <code className="flex-1 rounded-lg bg-muted px-3 py-2 text-sm font-mono truncate border border-border/30">
-                        {fullUrl}
-                      </code>
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        onClick={() => copyToClipboard(fullUrl)}
-                        aria-label="Copy URL"
-                        className="shrink-0 rounded-lg"
-                      >
-                        {copied ? (
-                          <Check size={16} className="text-green-600" />
-                        ) : (
-                          <Copy size={16} />
-                        )}
-                      </Button>
-                    </div>
-                  </div>
-
-                  <div className="flex gap-2">
-                    <Button
-                      variant="secondary"
-                      size="sm"
-                      onClick={refreshPreview}
-                      className="rounded-lg"
-                    >
+                    <Button variant="secondary" size="sm" onClick={() => setLiveImgKey((k) => k + 1)} className="rounded-xl bg-white/90 text-[#06283D] hover:bg-white">
                       <Shuffle size={14} weight="bold" className="mr-2" />
-                      Randomize
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => copyToClipboard(fullUrl)}
-                      className="rounded-lg"
-                    >
-                      <Copy size={14} className="mr-2" />
-                      Copy URL
+                      New image
                     </Button>
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+
+                <div className="grid gap-3 p-2 pt-4 sm:grid-cols-[1fr_1fr_auto]">
+                  <label className="space-y-1.5 text-xs font-medium text-muted-foreground">
+                    Width
+                    <input
+                      type="number"
+                      value={width}
+                      onChange={(e) => setWidth(e.target.value)}
+                      min="1"
+                      max="3000"
+                      className="h-11 w-full rounded-xl border border-border/60 bg-background/70 px-3 font-mono text-sm text-foreground outline-none transition focus:ring-2 focus:ring-ring"
+                    />
+                  </label>
+                  <label className="space-y-1.5 text-xs font-medium text-muted-foreground">
+                    Height
+                    <input
+                      type="number"
+                      value={height}
+                      onChange={(e) => setHeight(e.target.value)}
+                      min="1"
+                      max="3000"
+                      className="h-11 w-full rounded-xl border border-border/60 bg-background/70 px-3 font-mono text-sm text-foreground outline-none transition focus:ring-2 focus:ring-ring"
+                    />
+                  </label>
+                  <Button onClick={() => copyToClipboard(fullUrl, "hero-url")} className="self-end rounded-xl h-11">
+                    {copied === "hero-url" ? <Check size={16} weight="bold" /> : <Copy size={16} weight="bold" />}
+                    <span className="ml-2 hidden sm:inline">Copy endpoint</span>
+                  </Button>
+                </div>
+                <div className="mx-2 mb-2 rounded-xl border border-border/50 bg-muted/70 px-3 py-2 font-mono text-xs text-muted-foreground">
+                  {fullUrl}
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Stats bar */}
-      <section className="relative -mt-8 z-20">
-        <div className="container">
-          <Card className="shadow-card-glow border-border/50">
-            <CardContent className="p-6">
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 divide-x divide-border/50">
-                {[
-                  { label: "Total Images", value: stats.totalImages, icon: Image },
-                  { label: "Species", value: stats.totalSpecies, icon: Fish },
-                  {
-                    label: "Source Datasets",
-                    value: stats.totalSources || 1,
-                    icon: Database,
-                  },
-                  {
-                    label: "API Endpoints",
-                    value: stats.endpoints.length || 8,
-                    icon: Terminal,
-                  },
-                ].map((stat) => (
-                  <div key={stat.label} className="text-center px-2 first:pl-0 last:pr-0">
-                    <stat.icon
-                      size={16}
-                      weight="bold"
-                      className="mx-auto mb-1.5 text-primary"
-                    />
-                    <div className="text-2xl md:text-3xl font-bold font-mono tracking-tight">
-                      {stat.value.toLocaleString()}
-                    </div>
-                    <div className="text-xs text-muted-foreground mt-0.5">
-                      {stat.label}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </section>
-
-      {/* Features - Asymmetric Bento Grid */}
       <section className="container py-20 md:py-28">
-        <div className="max-w-3xl mb-14">
-          <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">
-            Everything you need
-          </h2>
-          <p className="text-lg text-muted-foreground max-w-xl leading-relaxed">
-            A simple API that does exactly what you expect. No bloat, no surprises.
-          </p>
+        <div className="mb-12 max-w-3xl">
+          <p className="section-kicker mb-3">Platform</p>
+          <h2 className="display-title text-4xl md:text-6xl">Built for visual products and scientific context.</h2>
         </div>
-
-        <div className="grid md:grid-cols-3 gap-4 md:gap-6">
-          {/* Large feature card with image */}
-          <Card className="md:col-span-2 md:row-span-2 overflow-hidden group card-elevate">
-            <div className="relative h-48 md:h-56 overflow-hidden bg-muted">
-              <img
-                src={`${API_URL}/fish/1200/500?t=features`}
-                alt="Random fish showcase"
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                onError={(e) => {
-                  (e.target as HTMLImageElement).style.display = "none";
-                }}
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-transparent" />
-            </div>
-            <CardContent className="p-6 md:p-8 space-y-4">
-              <div className="rounded-xl bg-primary/10 w-11 h-11 flex items-center justify-center">
-                <Shuffle size={22} weight="bold" className="text-primary" />
+        <div className="grid auto-rows-[minmax(210px,auto)] gap-5 md:grid-cols-4">
+          {[
+            {
+              className: "md:col-span-2 md:row-span-2",
+              icon: Shuffle,
+              title: "Random, production-ready fish imagery",
+              desc: "Generate photographic fish assets at any dimension with one URL.",
+              media: `${API_URL}/fish/1200/720?t=feature-a`,
+            },
+            { icon: ArrowsOut, title: "Resize on demand", desc: "Responsive placeholders up to 3000px, cropped and cached." },
+            { icon: FishSimple, title: "Species URLs", desc: "Target a species slug when your UI needs consistent subject matter." },
+            { icon: Code, title: "JSON metadata", desc: "Scientific names, attribution, locality, license, and source URLs." },
+            { icon: Lightning, title: "Fast repeats", desc: "Generated derivatives are cached for quick subsequent loads." },
+          ].map((feature) => (
+            <article key={feature.title} className={`group overflow-hidden rounded-3xl glass-panel card-elevate ${feature.className || ""}`}>
+              {"media" in feature && feature.media ? (
+                <div className="relative h-56 overflow-hidden md:h-72">
+                  <img src={feature.media} alt={feature.title} className="h-full w-full object-cover transition duration-700 group-hover:scale-105" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-transparent" />
+                </div>
+              ) : null}
+              <div className="p-6 md:p-7">
+                <div className="mb-5 flex h-11 w-11 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                  <feature.icon size={22} weight="bold" />
+                </div>
+                <h3 className="text-xl font-semibold tracking-tight">{feature.title}</h3>
+                <p className="mt-2 max-w-md text-sm leading-6 text-muted-foreground">{feature.desc}</p>
               </div>
-              <div>
-                <h3 className="font-semibold text-xl mb-2">Random fish images</h3>
-                <p className="text-muted-foreground leading-relaxed">
-                  Get a random fish image at any size with a single URL.
-                  No registration, no API keys, no authentication.
-                </p>
-              </div>
-              <div className="pt-3 flex items-center gap-2 text-sm">
-                <code className="rounded-lg bg-muted px-3 py-1.5 text-sm font-mono border border-border/30">
-                  GET /fish/800/600
-                </code>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 rounded-lg shrink-0"
-                  onClick={() => copyToClipboard(`${API_URL}/fish/800/600`)}
-                  aria-label="Copy example URL"
-                >
-                  <Copy size={12} />
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Resize on demand */}
-          <Card className="card-elevate">
-            <CardContent className="p-6 space-y-4">
-              <div className="rounded-xl bg-primary/10 w-10 h-10 flex items-center justify-center">
-                <ArrowsOut size={18} weight="bold" className="text-primary" />
-              </div>
-              <div>
-                <h3 className="font-semibold mb-1">Resize on demand</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  Any width and height up to 3000px. Center-cropped JPEG at quality 85.
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Species URLs */}
-          <Card className="card-elevate">
-            <CardContent className="p-6 space-y-4">
-              <div className="rounded-xl bg-primary/10 w-10 h-10 flex items-center justify-center">
-                <FishSimple size={18} weight="bold" className="text-primary" />
-              </div>
-              <div>
-                <h3 className="font-semibold mb-1">Species-based URLs</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  Consistent results from the same species using slugs.
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Metadata */}
-          <Card className="card-elevate">
-            <CardContent className="p-6 space-y-4">
-              <div className="rounded-xl bg-primary/10 w-10 h-10 flex items-center justify-center">
-                <Code size={18} weight="bold" className="text-primary" />
-              </div>
-              <div>
-                <h3 className="font-semibold mb-1">Metadata endpoint</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  Full JSON with scientific name, author, locality, and license.
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Attribution */}
-          <Card className="card-elevate">
-            <CardContent className="p-6 space-y-4">
-              <div className="rounded-xl bg-primary/10 w-10 h-10 flex items-center justify-center">
-                <Globe size={18} weight="bold" className="text-primary" />
-              </div>
-              <div>
-                <h3 className="font-semibold mb-1">Attribution-ready</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  License and author information preserved. Credit properly.
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Fast */}
-          <Card className="card-elevate">
-            <CardContent className="p-6 space-y-4">
-              <div className="rounded-xl bg-primary/10 w-10 h-10 flex items-center justify-center">
-                <Clock size={18} weight="bold" className="text-primary" />
-              </div>
-              <div>
-                <h3 className="font-semibold mb-1">Fast responses</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  Resized images cached for 24 hours. Near-instant repeats.
-                </p>
-              </div>
-            </CardContent>
-          </Card>
+            </article>
+          ))}
         </div>
       </section>
 
-      {/* Species Showcase */}
-      <section className="border-t border-border/50 bg-surface-subtle">
-        <div className="container py-20 md:py-28">
-          <div className="max-w-3xl mb-14">
-            <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">
-              Explore species
-            </h2>
-            <p className="text-lg text-muted-foreground max-w-xl leading-relaxed">
-              Browse {stats.totalSpecies.toLocaleString()} species from our curated collection.
-            </p>
+      <section className="bg-surface-subtle/75 py-20 md:py-28">
+        <div className="container">
+          <div className="mb-12 flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
+            <div className="max-w-3xl">
+              <p className="section-kicker mb-3">Species showcase</p>
+              <h2 className="display-title text-4xl md:text-6xl">A living image library, not a spreadsheet.</h2>
+            </div>
+            <Button asChild variant="outline" className="rounded-xl bg-background/60">
+              <Link to="/explore">
+                View collection
+                <ArrowRight size={15} weight="bold" className="ml-2" />
+              </Link>
+            </Button>
           </div>
           <ShowcaseGrid />
         </div>
       </section>
 
-      {/* Code Examples - Interactive playground */}
       <section className="container py-20 md:py-28">
-        <div className="grid lg:grid-cols-5 gap-12 items-start">
-          <div className="lg:col-span-2 space-y-4">
-            <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">
-              Simple integration
-            </h2>
-            <p className="text-lg text-muted-foreground leading-relaxed">
-              Use ikanhub images in your projects with nothing more than a URL.
-              Drop it in HTML, CSS, or your favorite programming language.
+        <div className="grid gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:items-start">
+          <div className="space-y-5">
+            <p className="section-kicker">Developer experience</p>
+            <h2 className="display-title text-4xl md:text-6xl">Drop in an endpoint. Get the ocean back.</h2>
+            <p className="max-w-lg text-lg leading-8 text-muted-foreground">
+              Preview images, copy generated URLs, and ship realistic marine biodiversity imagery without account setup.
             </p>
-            <div className="flex gap-3 pt-2">
-              <Button asChild>
-                <Link to="/docs">
-                  View all endpoints
-                  <ArrowRight size={16} weight="bold" className="ml-2" />
-                </Link>
-              </Button>
-            </div>
+            <Button asChild className="rounded-xl">
+              <Link to="/docs">
+                Read documentation
+                <ArrowRight size={15} weight="bold" className="ml-2" />
+              </Link>
+            </Button>
           </div>
-
-          <div className="lg:col-span-3">
-            <Card className="overflow-hidden shadow-glow-lg border-border/50">
-              <CardContent className="p-6">
+          <div className="glass-panel overflow-hidden rounded-3xl p-4">
+            <div className="grid gap-4 md:grid-cols-[0.9fr_1.1fr]">
+              <div className="overflow-hidden rounded-2xl bg-muted">
+                <img src={`${API_URL}/fish/740/860?t=playground`} alt="API playground fish preview" className="h-full min-h-[360px] w-full object-cover" />
+              </div>
+              <div className="space-y-4">
+                <div className="rounded-2xl border border-border/50 bg-background/70 p-4">
+                  <p className="mb-2 text-xs font-medium text-muted-foreground">Endpoint</p>
+                  <div className="flex items-center gap-2 rounded-xl bg-muted px-3 py-2">
+                    <code className="min-w-0 flex-1 truncate font-mono text-sm">{fullUrl}</code>
+                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg" onClick={() => copyToClipboard(fullUrl, "playground")}>
+                      {copied === "playground" ? <Check size={14} className="text-emerald-500" /> : <Copy size={14} />}
+                    </Button>
+                  </div>
+                </div>
                 <Tabs defaultValue="HTML">
-                  <TabsList className="mb-4 gap-0 bg-muted p-1 rounded-xl">
+                  <TabsList className="mb-3 rounded-xl bg-muted p-1">
                     {codeExamples.map((ex) => (
-                      <TabsTrigger
-                        key={ex.label}
-                        value={ex.label}
-                        className="rounded-lg text-xs data-[state=active]:bg-background data-[state=active]:shadow-sm"
-                      >
+                      <TabsTrigger key={ex.label} value={ex.label} className="rounded-lg text-xs">
                         {ex.label}
                       </TabsTrigger>
                     ))}
                   </TabsList>
                   {codeExamples.map((ex) => (
                     <TabsContent key={ex.label} value={ex.label}>
-                      <div className="relative group">
-                        <pre className="rounded-xl bg-muted p-4 md:p-5 overflow-x-auto text-sm font-mono leading-relaxed border border-border/30">
-                          <code>{ex.code}</code>
-                        </pre>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg"
-                          onClick={() => copyToClipboard(ex.code)}
-                          aria-label="Copy code"
-                        >
-                          <Copy size={14} />
-                        </Button>
-                      </div>
+                      <pre className="premium-code min-h-[190px] overflow-x-auto rounded-2xl border p-4 text-sm leading-7">
+                        <code>{ex.code}</code>
+                      </pre>
                     </TabsContent>
                   ))}
                 </Tabs>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </section>
-
-      {/* Developer Examples */}
-      <section className="border-t border-border/50 bg-surface-subtle">
-        <div className="container py-20 md:py-28">
-          <div className="max-w-3xl mb-14">
-            <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">
-              Developer-friendly by design
-            </h2>
-            <p className="text-lg text-muted-foreground max-w-xl leading-relaxed">
-              Simple, predictable URLs for every use case.
-            </p>
-          </div>
-          <div className="grid md:grid-cols-3 gap-4 md:gap-6">
-            {[
-              {
-                title: "Random image by size",
-                code: "GET /fish/800/600",
-                desc: "Returns a random fish image resized to the specified dimensions.",
-                img: `${API_URL}/fish/800/400?t=dev1`,
-              },
-              {
-                title: "Specific image by ID",
-                code: "GET /fish/id/12/800/600",
-                desc: "Returns a specific image by ID, resized to the requested dimensions.",
-                img: `${API_URL}/fish/id/1/800/400?t=dev2`,
-              },
-              {
-                title: "Random metadata",
-                code: "GET /fish/random.json",
-                desc: "Returns JSON metadata for a random image, including all attribution fields.",
-                img: null,
-                response: `{
-  "id": 42,
-  "scientificName": "Pteragogus turdus",
-  "commonName": "Thrush wrasse",
-  "author": "John E. Randall",
-  "locality": "Philippines",
-  "license": "CC BY-NC 3.0"
-}`,
-              },
-            ].map((ex) => (
-              <Card key={ex.title} className="overflow-hidden card-elevate border-border/50">
-                {ex.img && (
-                  <div className="relative h-40 overflow-hidden bg-muted">
-                    <img
-                      src={ex.img}
-                      alt={ex.title}
-                      className="w-full h-full object-cover"
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).style.display = "none";
-                      }}
-                    />
+                <div className="rounded-2xl border border-border/50 bg-background/70 p-4">
+                  <div className="mb-3 flex items-center gap-2 text-sm font-semibold">
+                    <Database size={16} weight="bold" className="text-primary" />
+                    Response example
                   </div>
-                )}
-                <CardContent className="p-6 space-y-3">
-                  <h3 className="font-semibold">{ex.title}</h3>
-                  <div className="rounded-lg bg-muted px-3 py-2.5 border border-border/20">
-                    <code className="text-sm font-mono">{ex.code}</code>
-                  </div>
-                  {ex.response ? (
-                    <pre className="text-xs font-mono text-muted-foreground leading-relaxed bg-muted/50 rounded-lg p-3 border border-border/20 overflow-x-auto">
-                      <code>{ex.response}</code>
-                    </pre>
-                  ) : (
-                    <p className="text-sm text-muted-foreground">{ex.desc}</p>
-                  )}
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* CTA */}
-      <section className="container py-20 md:py-28">
-        <Card className="relative overflow-hidden border-none">
-          <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary/90 to-primary/80" />
-          <div className="relative z-10 p-10 md:p-14 lg:p-16 text-center space-y-6">
-            <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-white">
-              Start using ikanhub today
-            </h2>
-            <p className="text-white/80 max-w-lg mx-auto leading-relaxed text-lg">
-              No registration required. Just use the URLs directly in your HTML,
-              CSS, or applications.
-            </p>
-            <div className="flex items-center justify-center gap-3 pt-2">
-              <Button
-                asChild
-                variant="secondary"
-                size="lg"
-                className="rounded-xl h-12 px-6 bg-white text-primary hover:bg-white/90"
-              >
-                <Link to="/docs">
-                  Read the docs
-                  <ArrowRight size={16} weight="bold" className="ml-2" />
-                </Link>
-              </Button>
-              <Button
-                variant="outline"
-                size="lg"
-                className="rounded-xl h-12 px-6 border-white/20 text-white hover:bg-white/10"
-                asChild
-              >
-                <Link to="/explore">
-                  <Image size={16} className="mr-2" />
-                  Browse images
-                </Link>
-              </Button>
+                  <pre className="overflow-x-auto font-mono text-xs leading-6 text-muted-foreground">{`{
+  "scientificName": "${randomFish?.scientificName || "Acanthurus coeruleus"}",
+  "commonName": "${randomFish?.commonName || "Blue tang"}",
+  "url": "/fish/id/42/800/600"
+}`}</pre>
+                </div>
+              </div>
             </div>
           </div>
-        </Card>
+        </div>
+      </section>
+
+      <section className="container pb-20 md:pb-28">
+        <div className="glass-panel relative overflow-hidden rounded-[2rem] p-3 md:p-4">
+          <div className="grid gap-4 lg:grid-cols-[1.05fr_0.95fr]">
+            <div className="relative min-h-[420px] overflow-hidden rounded-[1.6rem] bg-[#06283D] p-7 text-white md:p-10">
+              <img
+                src={`${API_URL}/fish/1200/760?t=cta`}
+                alt="Fish image generated by IkanHub"
+                className="absolute inset-0 h-full w-full object-cover opacity-70"
+              />
+              <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(6,40,61,.96),rgba(6,40,61,.62)_48%,rgba(6,40,61,.18)),radial-gradient(circle_at_20%_0%,rgba(71,181,255,.34),transparent_24rem)]" />
+              <div className="relative flex h-full max-w-xl flex-col justify-between">
+                <div>
+                  <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-medium text-white/78 backdrop-blur">
+                    <Sparkle size={14} weight="fill" className="text-[#8DE3C5]" />
+                    Ready for prototypes, docs, and data products
+                  </div>
+                  <h2 className="display-title text-4xl md:text-6xl">Start with one URL.</h2>
+                  <p className="mt-5 max-w-lg text-base leading-7 text-white/74 md:text-lg">
+                    Pull real fish photography into your interface, then fetch species metadata when your product needs context.
+                  </p>
+                </div>
+                <div className="mt-10 flex flex-col gap-3 sm:flex-row">
+                  <Button asChild size="lg" className="rounded-xl bg-white text-[#06283D] hover:bg-white/90">
+                    <Link to="/docs">
+                      View docs
+                      <ArrowRight size={16} weight="bold" className="ml-2" />
+                    </Link>
+                  </Button>
+                  <Button asChild variant="outline" size="lg" className="rounded-xl border-white/20 bg-white/5 text-white hover:bg-white/10">
+                    <Link to="/explore">Browse species</Link>
+                  </Button>
+                </div>
+              </div>
+            </div>
+
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
+              <div className="rounded-[1.6rem] border border-border/50 bg-background/72 p-5">
+                <div className="mb-4 flex items-center justify-between">
+                  <div>
+                    <p className="text-xs font-medium text-muted-foreground">Image endpoint</p>
+                    <p className="mt-1 text-lg font-semibold tracking-tight">Generate any crop</p>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="rounded-xl"
+                    onClick={() => copyToClipboard(`${API_URL}/fish/1200/760`, "cta-image")}
+                    aria-label="Copy CTA image endpoint"
+                  >
+                    {copied === "cta-image" ? <Check size={16} className="text-emerald-500" /> : <Copy size={16} />}
+                  </Button>
+                </div>
+                <div className="rounded-2xl bg-muted px-3 py-3">
+                  <code className="block truncate font-mono text-sm">{API_URL}/fish/1200/760</code>
+                </div>
+              </div>
+
+              <div className="rounded-[1.6rem] border border-border/50 bg-background/72 p-5">
+                <div className="mb-4 flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                    <Database size={19} weight="bold" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-medium text-muted-foreground">Metadata endpoint</p>
+                    <p className="text-lg font-semibold tracking-tight">Use the data layer</p>
+                  </div>
+                </div>
+                <pre className="premium-code overflow-x-auto rounded-2xl border p-4 text-xs leading-6">{`{
+  "scientificName": "Acanthurus coeruleus",
+  "commonName": "Blue tang",
+  "license": "CC BY-NC 3.0"
+}`}</pre>
+              </div>
+            </div>
+          </div>
+        </div>
       </section>
     </div>
   );
@@ -608,71 +420,51 @@ console.log(data.scientificName);`,
 
 function ShowcaseGrid() {
   const [species, setSpecies] = useState<
-    { slug: string; scientificName: string; commonName: string | null; imageCount: number }[]
+    { slug: string; scientificName: string; commonName: string | null; imageCount: number; url: string }[]
   >([]);
-  const [speciesImages, setSpeciesImages] = useState<Record<string, string>>({});
-  const API_URL = import.meta.env.VITE_API_URL || "";
 
   useEffect(() => {
     fetch(`${API_URL}/api/species`)
       .then((r) => r.json())
       .then((data) => {
-        const list = (data.species || []).slice(0, 6);
+        const list = (data.species || []).slice(0, 7);
         setSpecies(list);
-        list.forEach((s: { slug: string }) => {
-          fetch(`${API_URL}/api/search?q=${encodeURIComponent(s.slug)}`)
-            .then((r) => r.json())
-            .then((d) => {
-              if (d.results?.length > 0) {
-                setSpeciesImages((prev) => ({
-                  ...prev,
-                  [s.slug]: d.results[0].url,
-                }));
-              }
-            })
-            .catch(() => {});
-        });
       })
       .catch(() => {});
   }, []);
 
-  if (species.length === 0) return null;
+  if (species.length === 0) {
+    return <div className="h-80 rounded-3xl skeleton-shimmer" />;
+  }
 
   return (
-    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+    <div className="grid gap-5 md:grid-cols-4 md:auto-rows-[220px]">
       {species.map((s, i) => (
         <Link
           key={s.slug}
           to={`/explore?species=${s.scientificName}`}
-          className={`group relative overflow-hidden rounded-2xl bg-muted block card-elevate ${
-            i === 0 ? "md:col-span-2 md:row-span-2 md:min-h-[400px]" : "md:min-h-[200px]"
+          className={`group relative overflow-hidden rounded-3xl bg-muted shadow-card-glow ${
+            i === 0 ? "md:col-span-2 md:row-span-2" : i === 3 ? "md:col-span-2" : ""
           }`}
         >
-          <div className="absolute inset-0 bg-muted">
-            {speciesImages[s.slug] && (
-              <img
-                src={`${API_URL}${speciesImages[s.slug]}`}
-                alt={s.scientificName}
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                onError={(e) => {
-                  (e.target as HTMLImageElement).style.display = "none";
-                }}
-              />
-            )}
-          </div>
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-          <div className="relative z-10 p-6 flex flex-col justify-end h-full min-h-[200px] md:min-h-[inherit]">
-            <div className="space-y-1">
-              <h3 className="text-white font-semibold text-lg leading-tight">
-                <em>{s.scientificName}</em>
-              </h3>
-              {s.commonName && (
-                <p className="text-white/70 text-sm">{s.commonName}</p>
-              )}
-              <p className="text-white/50 text-xs font-mono">
-                {s.imageCount} image{s.imageCount !== 1 ? "s" : ""}
-              </p>
-            </div>
+          <img
+            src={`${API_URL}/fish/species/${s.slug}/${i === 0 ? "1200/900" : i === 3 ? "900/520" : "700/620"}`}
+            alt={s.scientificName}
+            className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-110"
+            loading="lazy"
+            onError={(event) => {
+              (event.currentTarget as HTMLImageElement).src = `${API_URL}${s.url}`;
+            }}
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/18 to-transparent" />
+          <div className="relative flex h-full min-h-[240px] flex-col justify-end p-6">
+            <p className="mb-2 w-fit rounded-md bg-white/12 px-2 py-1 font-mono text-xs text-white/70 backdrop-blur">
+              {s.imageCount} images
+            </p>
+            <h3 className="text-xl font-semibold leading-tight text-white">
+              <em>{s.scientificName}</em>
+            </h3>
+            {s.commonName && <p className="mt-1 text-sm text-white/70">{s.commonName}</p>}
           </div>
         </Link>
       ))}

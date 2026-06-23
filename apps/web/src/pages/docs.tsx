@@ -18,7 +18,7 @@ function CodeBlock({ code, label }: { code: string; label?: string }) {
       {label && (
         <div className="text-xs font-mono text-muted-foreground mb-1.5">{label}</div>
       )}
-      <pre className="rounded-xl bg-muted p-4 pr-12 overflow-x-auto text-sm font-mono leading-relaxed border border-border/30">
+      <pre className="premium-code rounded-xl border p-4 pr-12 overflow-x-auto text-sm font-mono leading-relaxed">
         <code>{code}</code>
       </pre>
       <Button
@@ -163,26 +163,30 @@ const endpoints = [
 
 export default function Docs() {
   return (
-    <div className="container py-12 md:py-16 space-y-12">
+    <div>
       {/* Header */}
-      <div className="max-w-3xl">
-        <div className="flex items-center gap-2 mb-4">
-          <BookOpenText size={20} weight="bold" className="text-primary" />
-          <span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-            Documentation
-          </span>
+      <section className="relative overflow-hidden bg-hero-gradient">
+        <div className="absolute inset-0 bg-ocean-pattern pointer-events-none" />
+        <div className="container relative z-10 pt-28 pb-14 md:pt-32 md:pb-20">
+          <div className="max-w-4xl">
+            <div className="flex items-center gap-2 mb-4">
+              <BookOpenText size={20} weight="bold" className="text-primary" />
+              <span className="section-kicker">Documentation</span>
+            </div>
+            <h1 className="display-title text-5xl md:text-7xl">
+              API documentation for visual fish data.
+            </h1>
+            <p className="mt-6 max-w-2xl text-lg text-muted-foreground leading-8">
+              IkanHub provides a simple REST API for fish images and metadata. No authentication required.
+            </p>
+          </div>
         </div>
-        <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">
-          API Documentation
-        </h1>
-        <p className="text-lg text-muted-foreground leading-relaxed">
-          Ikanhub provides a simple REST API for fish placeholder images. No
-          authentication required. All endpoints are free and open.
-        </p>
-      </div>
+      </section>
+
+      <div className="container py-12 md:py-16 space-y-12">
 
       {/* Base URL */}
-      <Card className="border-border/50 shadow-card-glow">
+      <Card className="glass-panel rounded-3xl">
         <CardHeader>
           <CardTitle className="text-lg">Base URL</CardTitle>
         </CardHeader>
@@ -195,7 +199,7 @@ export default function Docs() {
       </Card>
 
       {/* Validation */}
-      <Card className="border-border/50 shadow-card-glow">
+      <Card className="glass-panel rounded-3xl">
         <CardHeader>
           <CardTitle className="text-lg">Validation Rules</CardTitle>
         </CardHeader>
@@ -230,7 +234,7 @@ export default function Docs() {
       {/* Endpoints */}
       <div className="space-y-8">
         <h2 className="text-2xl font-bold tracking-tight">Endpoints</h2>
-        <div className="divide-y divide-border/50 border border-border/50 rounded-2xl overflow-hidden">
+        <div className="divide-y divide-border/50 overflow-hidden rounded-3xl border border-border/50 bg-background/45 backdrop-blur">
           {endpoints.map((ep) => (
             <div key={ep.path} id={ep.path} className="scroll-mt-20 p-6 md:p-8 space-y-5">
               <div className="flex items-center gap-3">
@@ -283,7 +287,7 @@ export default function Docs() {
       <div className="space-y-8">
         <h2 className="text-2xl font-bold tracking-tight">Usage Examples</h2>
         <div className="grid md:grid-cols-2 gap-4">
-          <Card className="border-border/50 shadow-card-glow">
+          <Card className="glass-panel rounded-3xl">
             <CardHeader>
               <CardTitle className="text-base">HTML Image Tag</CardTitle>
             </CardHeader>
@@ -294,7 +298,7 @@ export default function Docs() {
             </CardContent>
           </Card>
 
-          <Card className="border-border/50 shadow-card-glow">
+          <Card className="glass-panel rounded-3xl">
             <CardHeader>
               <CardTitle className="text-base">CSS Background</CardTitle>
             </CardHeader>
@@ -308,7 +312,7 @@ export default function Docs() {
             </CardContent>
           </Card>
 
-          <Card className="border-border/50 shadow-card-glow">
+          <Card className="glass-panel rounded-3xl">
             <CardHeader>
               <CardTitle className="text-base">curl</CardTitle>
             </CardHeader>
@@ -317,7 +321,7 @@ export default function Docs() {
             </CardContent>
           </Card>
 
-          <Card className="border-border/50 shadow-card-glow">
+          <Card className="glass-panel rounded-3xl">
             <CardHeader>
               <CardTitle className="text-base">JavaScript / fetch</CardTitle>
             </CardHeader>
@@ -332,7 +336,7 @@ console.log(data.scientificName);`}
       </div>
 
       {/* Attribution */}
-      <Card className="border-primary/20 bg-primary/5 border-border/50 shadow-card-glow">
+      <Card className="glass-panel rounded-3xl border-primary/20 bg-primary/5">
         <CardContent className="p-6 md:p-8 space-y-3 text-sm leading-relaxed">
           <h3 className="font-semibold text-base">Attribution</h3>
           <p className="text-muted-foreground">
@@ -353,6 +357,7 @@ console.log(data.scientificName);`}
           </p>
         </CardContent>
       </Card>
+      </div>
     </div>
   );
 }

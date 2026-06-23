@@ -3,7 +3,7 @@ import { Link, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Copy, Check, MagnifyingGlass, Spinner, ArrowSquareOut, Image, Fish } from "@phosphor-icons/react";
+import { Copy, Check, MagnifyingGlass, ArrowSquareOut, Image, Fish, SlidersHorizontal } from "@phosphor-icons/react";
 
 const API_URL = import.meta.env.VITE_API_URL || "";
 
@@ -100,44 +100,54 @@ export default function Explore() {
   const displayedSpecies = speciesExpanded ? species : species.slice(0, 12);
 
   return (
-    <div className="container py-12 md:py-16 space-y-10">
-      {/* Header */}
-      <div className="max-w-3xl">
-        <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">
-          Explore images
-        </h1>
-        <p className="text-lg text-muted-foreground leading-relaxed">
-          Browse the collection of fish images. Click on any image for details and copy options.
-        </p>
-      </div>
-
-      {/* Search & Filters */}
-      <div className="space-y-4">
-        <div className="flex flex-col sm:flex-row gap-3">
-          <div className="flex-1 relative">
-            <MagnifyingGlass
-              size={16}
-              className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground"
-            />
-            <Input
-              placeholder="Search by species, name, or locality..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-              className="pl-10 rounded-xl h-11"
-            />
+    <div className="relative">
+      <section className="relative overflow-hidden bg-hero-gradient">
+        <div className="absolute inset-0 bg-ocean-pattern pointer-events-none" />
+        <div className="container relative z-10 pt-28 pb-14 md:pt-32 md:pb-20">
+          <div className="grid gap-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-end">
+            <div className="max-w-3xl">
+              <p className="section-kicker mb-3">Explore</p>
+              <h1 className="display-title text-5xl md:text-7xl">Unsplash-style discovery for fish.</h1>
+              <p className="mt-6 max-w-2xl text-lg leading-8 text-muted-foreground">
+                Browse photographic fish records, inspect attribution, and copy image or metadata endpoints from the collection.
+              </p>
+            </div>
+            <div className="glass-panel rounded-3xl p-4 md:p-5">
+              <div className="flex flex-col gap-3 sm:flex-row">
+                <div className="relative flex-1">
+                  <MagnifyingGlass
+                    size={18}
+                    weight="bold"
+                    className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground"
+                  />
+                  <Input
+                    placeholder="Search species, common name, locality..."
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                    className="h-12 rounded-2xl border-border/60 bg-background/70 pl-11 text-base shadow-none"
+                  />
+                </div>
+                <Button onClick={handleSearch} className="h-12 rounded-2xl px-6">
+                  Search
+                </Button>
+              </div>
+              <div className="mt-4 flex items-center gap-2 text-xs text-muted-foreground">
+                <SlidersHorizontal size={14} weight="bold" className="text-primary" />
+                {selectedSpecies ? `Filtered by ${selectedSpecies}` : "Showing the full image collection"}
+              </div>
+            </div>
           </div>
-          <Button onClick={handleSearch} className="rounded-xl h-11 px-5">
-            Search
-          </Button>
         </div>
+      </section>
 
+      <div className="container py-10 md:py-14 space-y-10">
         {/* Species chips */}
         {species.length > 0 && (
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2 rounded-3xl border border-border/50 bg-background/50 p-3 backdrop-blur">
             <Badge
               variant={!selectedSpecies ? "default" : "outline"}
-              className="cursor-pointer rounded-full px-3.5 py-1.5 text-xs font-medium"
+              className="cursor-pointer rounded-xl px-3.5 py-2 text-xs font-medium"
               onClick={() => {
                 setSelectedSpecies("");
                 setSearch("");
@@ -151,7 +161,7 @@ export default function Explore() {
               <Badge
                 key={s.slug}
                 variant={selectedSpecies === s.scientificName ? "default" : "outline"}
-                className="cursor-pointer rounded-full px-3.5 py-1.5 text-xs font-medium transition-all hover:border-primary/50"
+                className="cursor-pointer rounded-xl px-3.5 py-2 text-xs font-medium transition-all hover:-translate-y-0.5 hover:border-primary/50"
                 onClick={() => {
                   setSelectedSpecies(s.scientificName);
                   setSearch(s.scientificName);
@@ -165,7 +175,7 @@ export default function Explore() {
             {species.length > 12 && (
               <Badge
                 variant="outline"
-                className="cursor-pointer rounded-full px-3.5 py-1.5 text-xs font-medium"
+                className="cursor-pointer rounded-xl px-3.5 py-2 text-xs font-medium"
                 onClick={() => setSpeciesExpanded(!speciesExpanded)}
               >
                 {speciesExpanded ? "Show less" : `+${species.length - 12} more`}
@@ -173,7 +183,6 @@ export default function Explore() {
             )}
           </div>
         )}
-      </div>
 
       {/* Grid */}
       {loading ? (
@@ -181,18 +190,18 @@ export default function Explore() {
           {Array.from({ length: 8 }).map((_, i) => (
             <div key={i} className="masonry-item">
               <div
-                className="rounded-2xl skeleton-shimmer"
+                className="rounded-3xl skeleton-shimmer"
                 style={{
-                  height: `${150 + Math.random() * 200}px`,
+                  height: `${[260, 360, 300, 430, 280, 390, 330, 470][i]}px`,
                 }}
               />
             </div>
           ))}
         </div>
       ) : images.length === 0 ? (
-        <div className="text-center py-24 space-y-4">
-          <Fish size={40} className="mx-auto text-muted-foreground/40" weight="light" />
-          <p className="text-lg text-muted-foreground">No images found</p>
+        <div className="glass-panel mx-auto max-w-xl rounded-3xl py-20 text-center space-y-4">
+          <Fish size={42} className="mx-auto text-primary/50" weight="light" />
+          <p className="text-xl font-semibold">No images found</p>
           <p className="text-sm text-muted-foreground/60">
             Try a different search or species filter.
           </p>
@@ -202,8 +211,8 @@ export default function Explore() {
           {images.map((img) => {
             const aspectRatio = img.width && img.height ? img.width / img.height : 1.33;
             return (
-              <div key={img.id} className="masonry-item group">
-                <div className="rounded-2xl overflow-hidden bg-muted border border-border/50 transition-all duration-300 hover:shadow-lg hover:border-primary/20">
+              <article key={img.id} className="masonry-item group">
+                <div className="overflow-hidden rounded-3xl bg-card shadow-card-glow transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_28px_80px_rgba(6,40,61,0.18)]">
                   <Link
                     to={`/fish/${img.id}`}
                     className="block overflow-hidden relative"
@@ -218,25 +227,30 @@ export default function Explore() {
                         (e.target as HTMLImageElement).style.display = "none";
                       }}
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/12 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    <div className="absolute bottom-0 left-0 right-0 translate-y-3 p-4 text-white opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
+                      <p className="text-sm font-semibold leading-tight">
+                        <em>{img.scientificName}</em>
+                      </p>
+                      <p className="mt-1 text-xs text-white/70">{img.locality || img.commonName || "Metadata available"}</p>
+                    </div>
                   </Link>
-                  <div className="p-4 space-y-2">
+                  <div className="p-4 space-y-3">
                     <Link
                       to={`/fish/${img.id}`}
-                      className="block font-medium text-sm hover:text-primary transition-colors"
+                      className="block font-semibold text-sm hover:text-primary transition-colors"
                     >
                       <em>{img.scientificName}</em>
                     </Link>
-                    {img.commonName && (
-                      <p className="text-xs text-muted-foreground">
-                        {img.commonName}
-                      </p>
-                    )}
+                    <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                      {img.commonName && <span>{img.commonName}</span>}
+                      {img.license && <span className="rounded-md bg-muted px-2 py-1 font-mono">{img.license}</span>}
+                    </div>
                     <div className="flex items-center gap-1.5 pt-1.5 flex-wrap">
                       <Button
                         variant="secondary"
                         size="sm"
-                        className="h-7 text-xs gap-1.5 rounded-lg"
+                        className="h-8 text-xs gap-1.5 rounded-xl"
                         onClick={() => copyUrl(img.url, img.id)}
                       >
                         {copiedId === img.id ? (
@@ -249,7 +263,7 @@ export default function Explore() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="h-7 text-xs gap-1.5 rounded-lg"
+                        className="h-8 text-xs gap-1.5 rounded-xl"
                         onClick={() => copyUrl(img.metadataUrl, -img.id)}
                       >
                         <Copy size={11} />
@@ -258,7 +272,7 @@ export default function Explore() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="h-7 w-7 p-0 rounded-lg ml-auto"
+                        className="h-8 w-8 p-0 rounded-xl ml-auto"
                         asChild
                       >
                         <Link to={`/fish/${img.id}`}>
@@ -268,7 +282,7 @@ export default function Explore() {
                     </div>
                   </div>
                 </div>
-              </div>
+              </article>
             );
           })}
         </div>
@@ -282,7 +296,7 @@ export default function Explore() {
             size="sm"
             disabled={page <= 1}
             onClick={() => setPage((p) => Math.max(1, p - 1))}
-            className="rounded-xl"
+          className="rounded-xl"
           >
             Previous
           </Button>
@@ -316,12 +330,13 @@ export default function Explore() {
             size="sm"
             disabled={page >= totalPages}
             onClick={() => setPage((p) => p + 1)}
-            className="rounded-xl"
+          className="rounded-xl"
           >
             Next
           </Button>
         </div>
       )}
+      </div>
     </div>
   );
 }
