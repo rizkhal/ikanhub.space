@@ -1,0 +1,14 @@
+{
+  "name": "ikanhub",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "scripts"
+  ],
+  "scripts": {
+    "dev": "concurrently -n api,web -c cyan,magenta \"npm run dev -w @ikanhub/api\" \"npm run dev -w @ikanhub/web\""
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0"
+  }
+}

@@ -1,0 +1,48 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model FishImage {
+  id             Int             @id @default(autoincrement())
+  speciesId      String?
+  scientificName String
+  commonName     String?
+  slug           String
+  filename       String
+  localPath      String
+  originalUrl    String?
+  sourcePageUrl  String?
+  author         String?
+  locality       String?
+  license        String?
+  width          Int?
+  height         Int?
+  blurDataUrl    String?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+
+  apiLogs        ApiRequestLog[]
+
+  @@unique([filename])
+  @@unique([sourcePageUrl])
+  @@index([slug])
+  @@index([scientificName])
+}
+
+model ApiRequestLog {
+  id          Int       @id @default(autoincrement())
+  endpoint    String
+  width       Int?
+  height      Int?
+  fishImageId Int?
+  ipHash      String?
+  userAgent   String?
+  createdAt   DateTime  @default(now())
+
+  fishImage   FishImage? @relation(fields: [fishImageId], references: [id])
+}
