@@ -57,8 +57,10 @@ export default {
       },
       boxShadow: {
         none: "none",
-        subtle: "0 1px 2px rgba(0,0,0,0.04)",
-        card: "0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.03)",
+        subtle: "0 1px 2px rgba(19,99,223,0.04)",
+        card: "0 1px 3px rgba(19,99,223,0.04), 0 1px 2px rgba(19,99,223,0.03)",
+        glow: "0 0 0 1px rgba(19,99,223,0.06)",
+        "glow-lg": "0 8px 30px rgba(19,99,223,0.08), 0 0 0 1px rgba(19,99,223,0.06)",
       },
     },
   },
