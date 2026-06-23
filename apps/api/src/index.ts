@@ -4,6 +4,7 @@ import { cors } from "hono/cors";
 import { logger } from "hono/logger";
 import fishRouter from "./routes/fish.js";
 import apiRouter from "./routes/api.js";
+import { getAllImages } from "./services/metadata.service.js";
 
 const app = new Hono();
 
@@ -13,6 +14,15 @@ app.use("*", logger());
 
 // Health check
 app.get("/", (c) => c.json({ status: "ok", service: "ikanhub-api" }));
+
+app.get("/health", (c) =>
+  c.json({
+    status: "ok",
+    app: "ikanhub-api",
+    storage: "json",
+    images: getAllImages().length,
+  })
+);
 
 // Routes
 app.route("/fish", fishRouter);

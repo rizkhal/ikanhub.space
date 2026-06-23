@@ -2,16 +2,20 @@ import sharp from "sharp";
 import path from "path";
 import fs from "fs/promises";
 
-const STORAGE_DIR = process.env.STORAGE_DIR || "../../storage";
+const STORAGE_DIR = process.env.STORAGE_DIR
+  ? path.resolve(process.env.STORAGE_DIR)
+  : path.resolve("../../storage");
 
 export async function getResizedImage(
   sourcePath: string,
   width: number,
-  height: number
+  height: number,
+  imageId?: number
 ): Promise<Buffer> {
   const fullPath = path.resolve(STORAGE_DIR, sourcePath);
   const cacheDir = path.resolve(STORAGE_DIR, "cache");
-  const cacheKey = `${path.basename(sourcePath)}_${width}x${height}.jpg`;
+  const id = imageId ?? path.basename(sourcePath);
+  const cacheKey = `${id}_${width}x${height}.jpg`;
   const cachePath = path.join(cacheDir, cacheKey);
 
   // Check cache

@@ -1,48 +1,26 @@
 import { Hono } from "hono";
-import prisma from "../lib/prisma.js";
-import { getResizedImage, getImageBuffer } from "../lib/image.js";
+import {
+  getAllImages,
+  getRandomImage,
+  getImageById,
+  getImagesBySpeciesSlug,
+  resolveImagePath,
+  type FishImage,
+} from "../services/metadata.service.js";
+import { getResizedImage } from "../lib/image.js";
 import { validateDimensions, handleError } from "../middleware/validation.js";
-import crypto from "crypto";
 
 const fishRouter = new Hono();
 
-// Helper: hash IP
-function hashIP(ip: string): string {
-  return crypto.createHash("sha256").update(ip).digest("hex").slice(0, 16);
-}
-
-// Helper: pick a random image from an array
-function randomImage(images: any[]) {
-  if (images.length === 0) return null;
-  return images[Math.floor(Math.random() * images.length)];
-}
-
-// Helper: log request
-async function logRequest(
-  endpoint: string,
-  width: number | null,
-  height: number | null,
-  fishImageId: number | null,
-  ipHash: string | null,
-  userAgent: string | null
-) {
-  try {
-    await prisma.apiRequestLog.create({
-      data: { endpoint, width, height, fishImageId, ipHash, userAgent },
-    });
-  } catch {
-    // silently fail logging
-  }
-}
-
 // Helper: get a valid image buffer, skip if missing
-async function getValidImage(images: any[], width: number, height: number) {
-  // Shuffle for randomness
+async function getValidImage(images: FishImage[], width: number, height: number) {
   const shuffled = [...images].sort(() => Math.random() - 0.5);
 
   for (const img of shuffled) {
     try {
-      const buffer = await getResizedImage(img.localPath, width, height);
+      const sourcePath = resolveImagePath(img);
+      // Use the resolved absolute path directly
+      const buffer = await getResizedImage(img.localPath, width, height, img.id);
       return { buffer, image: img };
     } catch {
       // Image file missing, try next
@@ -52,43 +30,36 @@ async function getValidImage(images: any[], width: number, height: number) {
   return null;
 }
 
+// Helper: format image response
+function formatImageResponse(img: FishImage) {
+  return {
+    id: img.id,
+    scientificName: img.scientificName,
+    commonName: img.commonName || null,
+    slug: img.slug,
+    speciesId: img.speciesId || null,
+    author: img.author || null,
+    locality: img.locality || null,
+    license: img.license || null,
+    sourcePageUrl: img.sourcePageUrl || null,
+    originalUrl: img.originalUrl || null,
+    width: null,
+    height: null,
+    url: `/fish/id/${img.id}/800/600`,
+    metadataUrl: `/fish/id/${img.id}.json`,
+  };
+}
+
 // ==========================================
 // SPECIFIC ROUTES FIRST (before generic params)
 // ==========================================
 
 // GET /fish/random.json
 fishRouter.get("/random.json", async (c) => {
-  const count = await prisma.fishImage.count();
-  if (count === 0) return handleError(c, "No images available", 404);
-
-  const skip = Math.floor(Math.random() * count);
-  const [image] = await prisma.fishImage.findMany({
-    take: 1,
-    skip,
-  });
-
+  const image = getRandomImage();
   if (!image) return handleError(c, "No images available", 404);
 
-  const ip = c.req.header("x-forwarded-for") || "unknown";
-  const ua = c.req.header("user-agent") || null;
-  await logRequest(`/fish/random.json`, null, null, image.id, hashIP(ip), ua);
-
-  return c.json({
-    id: image.id,
-    scientificName: image.scientificName,
-    commonName: image.commonName,
-    slug: image.slug,
-    speciesId: image.speciesId,
-    author: image.author,
-    locality: image.locality,
-    license: image.license,
-    sourcePageUrl: image.sourcePageUrl,
-    originalUrl: image.originalUrl,
-    width: image.width,
-    height: image.height,
-    url: `/fish/id/${image.id}/800/600`,
-    metadataUrl: `/fish/id/${image.id}.json`,
-  });
+  return c.json(formatImageResponse(image));
 });
 
 // GET /fish/species/:slug/:width/:height
@@ -100,15 +71,11 @@ fishRouter.get("/species/:slug/:width/:height", async (c) => {
   const error = validateDimensions(width, height);
   if (error) return handleError(c, error);
 
-  const images = await prisma.fishImage.findMany({ where: { slug } });
+  const images = getImagesBySpeciesSlug(slug);
   if (images.length === 0) return handleError(c, "Species not found", 404);
 
   const result = await getValidImage(images, width, height);
   if (!result) return handleError(c, "No valid images found for this species", 404);
-
-  const ip = c.req.header("x-forwarded-for") || "unknown";
-  const ua = c.req.header("user-agent") || null;
-  await logRequest(`/fish/species/:slug/:w/:h`, width, height, result.image.id, hashIP(ip), ua);
 
   c.header("Content-Type", "image/jpeg");
   c.header("Cache-Control", "public, max-age=86400");
@@ -126,32 +93,13 @@ fishRouter.get("/id/:id", async (c) => {
     const id = parseInt(rawId.replace(".json", ""));
     if (isNaN(id)) return handleError(c, "Invalid ID");
 
-    const image = await prisma.fishImage.findUnique({ where: { id } });
+    const image = getImageById(id);
     if (!image) return handleError(c, "Image not found", 404);
 
-    const ip = c.req.header("x-forwarded-for") || "unknown";
-    const ua = c.req.header("user-agent") || null;
-    await logRequest(`/fish/id/:id.json`, null, null, image.id, hashIP(ip), ua);
-
-    return c.json({
-      id: image.id,
-      scientificName: image.scientificName,
-      commonName: image.commonName,
-      slug: image.slug,
-      speciesId: image.speciesId,
-      author: image.author,
-      locality: image.locality,
-      license: image.license,
-      sourcePageUrl: image.sourcePageUrl,
-      originalUrl: image.originalUrl,
-      width: image.width,
-      height: image.height,
-      url: `/fish/id/${image.id}/800/600`,
-      metadataUrl: `/fish/id/${image.id}.json`,
-    });
+    return c.json(formatImageResponse(image));
   }
 
-  // If no .json suffix, return not found (other routes handle /id/:id/:width/:height)
+  // If no .json suffix, return not found
   return handleError(c, "Use /fish/id/:id.json for metadata or /fish/id/:id/:width/:height for an image", 404);
 });
 
@@ -165,15 +113,11 @@ fishRouter.get("/id/:id/:width/:height", async (c) => {
   const error = validateDimensions(width, height);
   if (error) return handleError(c, error);
 
-  const image = await prisma.fishImage.findUnique({ where: { id } });
+  const image = getImageById(id);
   if (!image) return handleError(c, "Image not found", 404);
 
   try {
-    const buffer = await getResizedImage(image.localPath, width, height);
-
-    const ip = c.req.header("x-forwarded-for") || "unknown";
-    const ua = c.req.header("user-agent") || null;
-    await logRequest(`/fish/id/:id/:w/:h`, width, height, id, hashIP(ip), ua);
+    const buffer = await getResizedImage(image.localPath, width, height, id);
 
     c.header("Content-Type", "image/jpeg");
     c.header("Cache-Control", "public, max-age=86400");
@@ -197,15 +141,11 @@ fishRouter.get("/:width/:height", async (c) => {
   const error = validateDimensions(width, height);
   if (error) return handleError(c, error);
 
-  const images = await prisma.fishImage.findMany();
+  const images = getAllImages();
   if (images.length === 0) return handleError(c, "No images available", 404);
 
   const result = await getValidImage(images, width, height);
   if (!result) return handleError(c, "No valid images found", 404);
-
-  const ip = c.req.header("x-forwarded-for") || "unknown";
-  const ua = c.req.header("user-agent") || null;
-  await logRequest(`/fish/:w/:h`, width, height, result.image.id, hashIP(ip), ua);
 
   c.header("Content-Type", "image/jpeg");
   c.header("Cache-Control", "public, max-age=86400");
@@ -222,15 +162,11 @@ fishRouter.get("/:size", async (c) => {
     return handleError(c, "Size must be a number between 1 and 3000");
   }
 
-  const images = await prisma.fishImage.findMany();
+  const images = getAllImages();
   if (images.length === 0) return handleError(c, "No images available", 404);
 
   const result = await getValidImage(images, size, size);
   if (!result) return handleError(c, "No valid images found", 404);
-
-  const ip = c.req.header("x-forwarded-for") || "unknown";
-  const ua = c.req.header("user-agent") || null;
-  await logRequest(`/fish/:size`, size, size, result.image.id, hashIP(ip), ua);
 
   c.header("Content-Type", "image/jpeg");
   c.header("Cache-Control", "public, max-age=86400");

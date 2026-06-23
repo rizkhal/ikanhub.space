@@ -1,5 +1,12 @@
 import { Hono } from "hono";
-import prisma from "../lib/prisma.js";
+import {
+  searchImages,
+  getStats,
+  getSpecies,
+  getLocalities,
+  getImagesByLocalitySlug,
+  getImagesPaginated,
+} from "../services/metadata.service.js";
 
 const apiRouter = new Hono();
 
@@ -10,34 +17,21 @@ apiRouter.get("/search", async (c) => {
     return c.json({ results: [], query: q });
   }
 
-  const searchTerm = q.trim();
-
-  const results = await prisma.fishImage.findMany({
-    where: {
-      OR: [
-        { scientificName: { contains: searchTerm, mode: "insensitive" } },
-        { commonName: { contains: searchTerm, mode: "insensitive" } },
-        { locality: { contains: searchTerm, mode: "insensitive" } },
-        { author: { contains: searchTerm, mode: "insensitive" } },
-      ],
-    },
-    take: 50,
-    orderBy: { scientificName: "asc" },
-  });
+  const results = searchImages(q.trim());
 
   return c.json({
-    query: searchTerm,
+    query: q.trim(),
     count: results.length,
     results: results.map((img) => ({
       id: img.id,
       scientificName: img.scientificName,
-      commonName: img.commonName,
+      commonName: img.commonName || null,
       slug: img.slug,
-      author: img.author,
-      locality: img.locality,
-      license: img.license,
-      width: img.width,
-      height: img.height,
+      author: img.author || null,
+      locality: img.locality || null,
+      license: img.license || null,
+      width: null,
+      height: null,
       url: `/fish/id/${img.id}/400/300`,
       metadataUrl: `/fish/id/${img.id}.json`,
     })),
@@ -46,51 +40,88 @@ apiRouter.get("/search", async (c) => {
 
 // GET /api/stats
 apiRouter.get("/stats", async (c) => {
-  const [totalImages, totalSpecies, totalSources] = await Promise.all([
-    prisma.fishImage.count(),
-    prisma.fishImage.findMany({
-      select: { slug: true },
-      distinct: ["slug"],
-    }),
-    prisma.fishImage.findMany({
-      select: { sourcePageUrl: true },
-      where: { sourcePageUrl: { not: null } },
-      distinct: ["sourcePageUrl"],
-    }),
-  ]);
-
-  return c.json({
-    totalImages,
-    totalSpecies: totalSpecies.length,
-    totalSources: totalSources.length,
-    endpoints: [
-      "GET /fish/:width/:height",
-      "GET /fish/:size",
-      "GET /fish/id/:id/:width/:height",
-      "GET /fish/random.json",
-      "GET /fish/id/:id.json",
-      "GET /fish/species/:slug/:width/:height",
-      "GET /api/search?q=...",
-      "GET /api/stats",
-    ],
-  });
+  return c.json(getStats());
 });
 
 // GET /api/species - list all species
 apiRouter.get("/species", async (c) => {
-  const species = await prisma.fishImage.groupBy({
-    by: ["slug", "scientificName", "commonName"],
-    _count: { id: true },
-  });
+  const speciesList = getSpecies();
 
   return c.json({
-    count: species.length,
-    species: species.map((s: any) => ({
+    count: speciesList.length,
+    species: speciesList.map((s) => ({
       slug: s.slug,
       scientificName: s.scientificName,
-      commonName: s.commonName,
-      imageCount: s._count.id,
+      commonName: s.commonName || null,
+      imageCount: s.imageCount,
       url: `/fish/species/${s.slug}/400/300`,
+    })),
+  });
+});
+
+// GET /api/species/:slug
+apiRouter.get("/species/:slug", async (c) => {
+  const slug = c.req.param("slug");
+  const { getImagesBySpeciesSlug } = await import("../services/metadata.service.js");
+
+  const images = getImagesBySpeciesSlug(slug);
+  if (images.length === 0) return c.json({ error: "Species not found" }, 404);
+
+  const species = getSpecies().find((s) => s.slug === slug);
+
+  return c.json({
+    slug,
+    scientificName: species?.scientificName || slug,
+    commonName: species?.commonName || null,
+    imageCount: images.length,
+    images: images.map((img) => ({
+      id: img.id,
+      scientificName: img.scientificName,
+      commonName: img.commonName || null,
+      slug: img.slug,
+      author: img.author || null,
+      locality: img.locality || null,
+      license: img.license || null,
+      url: `/fish/id/${img.id}/400/300`,
+      metadataUrl: `/fish/id/${img.id}.json`,
+    })),
+  });
+});
+
+// GET /api/localities
+apiRouter.get("/localities", async (c) => {
+  const localities = getLocalities();
+
+  return c.json({
+    count: localities.length,
+    localities: localities.map((l) => ({
+      slug: l.slug,
+      name: l.name,
+      imageCount: l.imageCount,
+    })),
+  });
+});
+
+// GET /api/localities/:slug
+apiRouter.get("/localities/:slug", async (c) => {
+  const slug = c.req.param("slug");
+  const images = getImagesByLocalitySlug(slug);
+
+  if (images.length === 0) return c.json({ error: "Locality not found" }, 404);
+
+  return c.json({
+    slug,
+    imageCount: images.length,
+    images: images.map((img) => ({
+      id: img.id,
+      scientificName: img.scientificName,
+      commonName: img.commonName || null,
+      slug: img.slug,
+      author: img.author || null,
+      locality: img.locality || null,
+      license: img.license || null,
+      url: `/fish/id/${img.id}/400/300`,
+      metadataUrl: `/fish/id/${img.id}.json`,
     })),
   });
 });
@@ -99,32 +130,24 @@ apiRouter.get("/species", async (c) => {
 apiRouter.get("/images", async (c) => {
   const page = parseInt(c.req.query("page") || "1");
   const limit = parseInt(c.req.query("limit") || "20");
-  const skip = (page - 1) * limit;
 
-  const [images, total] = await Promise.all([
-    prisma.fishImage.findMany({
-      skip,
-      take: limit,
-      orderBy: { id: "asc" },
-    }),
-    prisma.fishImage.count(),
-  ]);
+  const result = getImagesPaginated(page, limit);
 
   return c.json({
-    page,
-    limit,
-    total,
-    totalPages: Math.ceil(total / limit),
-    images: images.map((img) => ({
+    page: result.page,
+    limit: result.limit,
+    total: result.total,
+    totalPages: result.totalPages,
+    images: result.images.map((img) => ({
       id: img.id,
       scientificName: img.scientificName,
-      commonName: img.commonName,
+      commonName: img.commonName || null,
       slug: img.slug,
-      author: img.author,
-      locality: img.locality,
-      license: img.license,
-      width: img.width,
-      height: img.height,
+      author: img.author || null,
+      locality: img.locality || null,
+      license: img.license || null,
+      width: null,
+      height: null,
       url: `/fish/id/${img.id}/400/300`,
       metadataUrl: `/fish/id/${img.id}.json`,
     })),
