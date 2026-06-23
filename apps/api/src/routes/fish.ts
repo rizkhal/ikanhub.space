@@ -9,6 +9,7 @@ import {
 } from "../services/metadata.service.js";
 import { getResizedImage } from "../lib/image.js";
 import { validateDimensions, handleError } from "../middleware/validation.js";
+import { setNoCache, setLongCache } from "../utils/cache.js";
 
 const fishRouter = new Hono();
 
@@ -54,15 +55,16 @@ function formatImageResponse(img: FishImage) {
 // SPECIFIC ROUTES FIRST (before generic params)
 // ==========================================
 
-// GET /fish/random.json
+// GET /fish/random.json — NON-DETERMINISTIC
 fishRouter.get("/random.json", async (c) => {
   const image = getRandomImage();
   if (!image) return handleError(c, "No images available", 404);
 
+  setNoCache(c);
   return c.json(formatImageResponse(image));
 });
 
-// GET /fish/species/:slug/:width/:height
+// GET /fish/species/:slug/:width/:height — DETERMINISTIC (random image from fixed species set)
 fishRouter.get("/species/:slug/:width/:height", async (c) => {
   const slug = c.req.param("slug");
   const width = parseInt(c.req.param("width"));
@@ -77,14 +79,14 @@ fishRouter.get("/species/:slug/:width/:height", async (c) => {
   const result = await getValidImage(images, width, height);
   if (!result) return handleError(c, "No valid images found for this species", 404);
 
+  setLongCache(c);
   c.header("Content-Type", "image/jpeg");
-  c.header("Cache-Control", "public, max-age=86400");
   c.header("X-Ikanhub-Image-Id", String(result.image.id));
   c.header("X-Ikanhub-Species", result.image.slug);
   return c.body(result.buffer as unknown as Uint8Array<ArrayBuffer>);
 });
 
-// GET /fish/id/:id (supports /fish/id/:id.json and /fish/id/:id)
+// GET /fish/id/:id (supports /fish/id/:id.json and /fish/id/:id) — DETERMINISTIC
 fishRouter.get("/id/:id", async (c) => {
   const rawId = c.req.param("id") || "";
 
@@ -96,6 +98,7 @@ fishRouter.get("/id/:id", async (c) => {
     const image = getImageById(id);
     if (!image) return handleError(c, "Image not found", 404);
 
+    setLongCache(c);
     return c.json(formatImageResponse(image));
   }
 
@@ -103,7 +106,7 @@ fishRouter.get("/id/:id", async (c) => {
   return handleError(c, "Use /fish/id/:id.json for metadata or /fish/id/:id/:width/:height for an image", 404);
 });
 
-// GET /fish/id/:id/:width/:height
+// GET /fish/id/:id/:width/:height — DETERMINISTIC
 fishRouter.get("/id/:id/:width/:height", async (c) => {
   const id = parseInt(c.req.param("id"));
   const width = parseInt(c.req.param("width"));
@@ -119,8 +122,8 @@ fishRouter.get("/id/:id/:width/:height", async (c) => {
   try {
     const buffer = await getResizedImage(image.localPath, width, height, id);
 
+    setLongCache(c);
     c.header("Content-Type", "image/jpeg");
-    c.header("Cache-Control", "public, max-age=86400");
     c.header("X-Ikanhub-Image-Id", String(image.id));
     c.header("X-Ikanhub-Species", image.slug);
     return c.body(buffer as unknown as Uint8Array<ArrayBuffer>);
@@ -133,7 +136,7 @@ fishRouter.get("/id/:id/:width/:height", async (c) => {
 // GENERIC ROUTES LAST
 // ==========================================
 
-// GET /fish/:width/:height
+// GET /fish/:width/:height — NON-DETERMINISTIC (random image selection)
 fishRouter.get("/:width/:height", async (c) => {
   const width = parseInt(c.req.param("width"));
   const height = parseInt(c.req.param("height"));
@@ -147,14 +150,14 @@ fishRouter.get("/:width/:height", async (c) => {
   const result = await getValidImage(images, width, height);
   if (!result) return handleError(c, "No valid images found", 404);
 
+  setNoCache(c);
   c.header("Content-Type", "image/jpeg");
-  c.header("Cache-Control", "public, max-age=86400");
   c.header("X-Ikanhub-Image-Id", String(result.image.id));
   c.header("X-Ikanhub-Species", result.image.slug);
   return c.body(result.buffer as unknown as Uint8Array<ArrayBuffer>);
 });
 
-// GET /fish/:size
+// GET /fish/:size — NON-DETERMINISTIC (random image selection)
 fishRouter.get("/:size", async (c) => {
   const size = parseInt(c.req.param("size"));
 
@@ -168,8 +171,8 @@ fishRouter.get("/:size", async (c) => {
   const result = await getValidImage(images, size, size);
   if (!result) return handleError(c, "No valid images found", 404);
 
+  setNoCache(c);
   c.header("Content-Type", "image/jpeg");
-  c.header("Cache-Control", "public, max-age=86400");
   c.header("X-Ikanhub-Image-Id", String(result.image.id));
   c.header("X-Ikanhub-Species", result.image.slug);
   return c.body(result.buffer as unknown as Uint8Array<ArrayBuffer>);
