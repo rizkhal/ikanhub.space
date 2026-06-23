@@ -130,6 +130,7 @@ export default function FishDetail() {
     <div>
       <section className="relative overflow-hidden bg-hero-gradient">
         <div className="absolute inset-0 bg-ocean-pattern pointer-events-none" />
+        <div className="absolute inset-x-0 bottom-0 h-44 bg-gradient-to-t from-background via-background/70 to-transparent pointer-events-none" />
         <div className="container relative z-10 pt-28 pb-8 md:pt-32 md:pb-12">
           <Link
             to="/explore"
@@ -177,7 +178,7 @@ export default function FishDetail() {
         </div>
       </section>
 
-      <section className="container py-12 md:py-16">
+      <section className="container relative z-20 -mt-8 pb-12 md:-mt-10 md:pb-16">
         <div className="grid gap-8 lg:grid-cols-[1fr_380px]">
           <main className="space-y-10">
             <div className="grid gap-4 sm:grid-cols-2">

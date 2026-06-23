@@ -92,8 +92,9 @@ export default function Landing() {
     <div>
       <section className="relative overflow-hidden bg-hero-gradient">
         <div className="absolute inset-0 bg-ocean-pattern pointer-events-none" />
-        <div className="container relative z-10 pt-28 pb-24 md:pt-32 md:pb-32">
-          <div className="grid lg:grid-cols-[0.9fr_1.1fr] gap-12 lg:gap-16 items-center">
+        <div className="absolute inset-x-0 bottom-0 h-56 bg-gradient-to-t from-background via-background/70 to-transparent pointer-events-none" />
+        <div className="container relative z-10 pt-28 pb-28 md:pt-32 md:pb-36">
+          <div className="grid gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16 lg:items-center">
             <div className="space-y-8 animate-fade-up">
               <Badge className="rounded-md border-primary/15 bg-primary/10 px-3 py-1.5 text-primary hover:bg-primary/10">
                 <Waves size={14} weight="bold" className="mr-2" />
@@ -218,7 +219,7 @@ export default function Landing() {
         </div>
       </section>
 
-      <section className="container py-20 md:py-28">
+      <section className="container relative z-20 -mt-8 pb-20 pt-4 md:-mt-10 md:pb-28">
         <div className="mb-12 max-w-3xl">
           <p className="section-kicker mb-3">Platform</p>
           <h2 className="display-title text-4xl md:text-6xl">Built for visual products and scientific context.</h2>

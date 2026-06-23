@@ -103,6 +103,7 @@ export default function Explore() {
     <div className="relative">
       <section className="relative overflow-hidden bg-hero-gradient">
         <div className="absolute inset-0 bg-ocean-pattern pointer-events-none" />
+        <div className="absolute inset-x-0 bottom-0 h-44 bg-gradient-to-t from-background via-background/70 to-transparent pointer-events-none" />
         <div className="container relative z-10 pt-28 pb-14 md:pt-32 md:pb-20">
           <div className="grid gap-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-end">
             <div className="max-w-3xl">
@@ -141,7 +142,7 @@ export default function Explore() {
         </div>
       </section>
 
-      <div className="container py-10 md:py-14 space-y-10">
+      <div className="container relative z-20 -mt-8 pb-10 md:-mt-10 md:pb-14 space-y-10">
         {/* Species chips */}
         {species.length > 0 && (
           <div className="flex flex-wrap gap-2 rounded-3xl border border-border/50 bg-background/50 p-3 backdrop-blur">

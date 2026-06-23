@@ -167,6 +167,7 @@ export default function Docs() {
       {/* Header */}
       <section className="relative overflow-hidden bg-hero-gradient">
         <div className="absolute inset-0 bg-ocean-pattern pointer-events-none" />
+        <div className="absolute inset-x-0 bottom-0 h-44 bg-gradient-to-t from-background via-background/70 to-transparent pointer-events-none" />
         <div className="container relative z-10 pt-28 pb-14 md:pt-32 md:pb-20">
           <div className="max-w-4xl">
             <div className="flex items-center gap-2 mb-4">
@@ -183,7 +184,7 @@ export default function Docs() {
         </div>
       </section>
 
-      <div className="container py-12 md:py-16 space-y-12">
+      <div className="container relative z-20 -mt-8 pb-12 md:-mt-10 md:pb-16 space-y-12">
 
       {/* Base URL */}
       <Card className="glass-panel rounded-3xl">

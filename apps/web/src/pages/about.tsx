@@ -1,14 +1,73 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { ArrowRight, Image, Fish, Code, Globe, BookOpenText, ShieldCheck } from "@phosphor-icons/react";
+import {
+  ArrowRight,
+  ArrowsOut,
+  BookOpenText,
+  Code,
+  Database,
+  Fish,
+  Globe,
+  Image,
+  ShieldCheck,
+} from "@phosphor-icons/react";
+
+const API_URL = import.meta.env.VITE_API_URL || "";
+
+const workflow = [
+  {
+    label: "01",
+    title: "Curated photography",
+    desc: "FishBase Best Photos gives the platform a real biological foundation instead of anonymous stock imagery.",
+  },
+  {
+    label: "02",
+    title: "Clean image URLs",
+    desc: "Every image can be requested by size, species, or ID with predictable REST paths.",
+  },
+  {
+    label: "03",
+    title: "Metadata beside the image",
+    desc: "Scientific name, author, locality, source URL, and license are exposed as JSON.",
+  },
+];
+
+const uses = [
+  {
+    icon: Image,
+    title: "Prototype with real marine photography",
+    desc: "Use actual fish photographs where generic placeholders make the product feel empty.",
+  },
+  {
+    icon: Code,
+    title: "Build visual developer tools",
+    desc: "Drop URLs into HTML, CSS, React, or backend jobs without an API key.",
+  },
+  {
+    icon: BookOpenText,
+    title: "Support education and editorial work",
+    desc: "Create biodiversity references with visible species context and attribution.",
+  },
+  {
+    icon: Globe,
+    title: "Connect images to records",
+    desc: "Pair display images with source data, license fields, and species names.",
+  },
+];
+
+const specs = [
+  { icon: ArrowsOut, title: "Image processing", desc: "Sharp resizes images on demand and returns JPEG output at quality 85." },
+  { icon: Database, title: "Caching", desc: "Generated sizes are cached on disk for faster repeat requests." },
+  { icon: ShieldCheck, title: "Validation", desc: "Width and height are validated server-side from 1 to 3000 pixels." },
+  { icon: Globe, title: "Privacy", desc: "The service only uses anonymous request data for basic analytics." },
+];
 
 export default function About() {
   return (
     <div>
-      {/* Header */}
       <section className="relative overflow-hidden bg-hero-gradient">
         <div className="absolute inset-0 bg-ocean-pattern pointer-events-none" />
+        <div className="absolute inset-x-0 bottom-0 h-44 bg-gradient-to-t from-background via-background/70 to-transparent pointer-events-none" />
         <div className="container relative z-10 pt-28 pb-14 md:pt-32 md:pb-20">
           <div className="max-w-4xl">
             <div className="flex items-center gap-2 mb-4">
@@ -25,200 +84,262 @@ export default function About() {
         </div>
       </section>
 
-      <div className="container py-12 md:py-16 max-w-5xl space-y-16">
-
-      {/* What is Ikanhub */}
-      <section className="grid lg:grid-cols-5 gap-8 lg:gap-12 items-start">
-        <div className="lg:col-span-3 space-y-4">
-          <h2 className="text-3xl font-bold tracking-tight">What is IkanHub?</h2>
-          <div className="space-y-4 text-muted-foreground leading-relaxed">
-            <p>
-              Inspired by{" "}
-              <a
-                href="https://picsum.photos"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-primary hover:underline"
-              >
-                Picsum Photos
-              </a>
-              , IkanHub provides a developer-friendly API for fish placeholder
-              images. Specify the dimensions in the URL and get a perfectly
-              resized, center-cropped JPEG image. No registration, no API keys.
-            </p>
-            <p>
-              The name IkanHub combines "Ikan" (fish in Indonesian and Malay) with
-              "hub", reflecting our mission to be the central hub for fish imagery
-              in development workflows.
-            </p>
-          </div>
-        </div>
-        <div className="lg:col-span-2">
-          <div className="overflow-hidden rounded-3xl bg-muted shadow-card-glow aspect-[4/3]">
-            <img
-              src={`${import.meta.env.VITE_API_URL || ""}/fish/600/450?t=about`}
-              alt="Random fish from the collection"
-              className="w-full h-full object-cover"
-              onError={(e) => {
-                (e.target as HTMLImageElement).style.display = "none";
-              }}
-            />
-          </div>
-        </div>
-      </section>
-
-      {/* Data Sources */}
-      <section className="space-y-6">
-        <h2 className="text-2xl font-bold tracking-tight">Data Sources</h2>
-        <Card className="glass-panel rounded-3xl">
-          <CardContent className="p-6 md:p-8 space-y-4 text-muted-foreground leading-relaxed">
-            <p>
-              Our primary image source is the{" "}
-              <a
-                href="https://fishbase.org"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-primary hover:underline font-medium"
-              >
-                FishBase
-              </a>{" "}
-              Best Photos collection, a comprehensive database of fish photographs
-              curated by biologists and ichthyologists worldwide. We curate these
-              images and make them accessible through the API.
-            </p>
-            <p>
-              Each image preserves its original metadata, including the scientific
-              name, author, locality, and license information. We do
-              not claim ownership of these images.
-            </p>
-          </CardContent>
-        </Card>
-      </section>
-
-      {/* Attribution and Licensing */}
-      <section className="space-y-6">
-        <h2 className="text-2xl font-bold tracking-tight">Attribution and Licensing</h2>
-        <Card className="glass-panel rounded-3xl border-primary/20 bg-primary/5">
-          <CardContent className="p-6 md:p-8 space-y-4">
-            <div className="flex items-start gap-3">
-              <ShieldCheck size={20} weight="bold" className="text-primary shrink-0 mt-0.5" />
-              <div className="space-y-3 text-sm leading-relaxed text-muted-foreground">
+      <div className="relative z-20 -mt-10 pb-16">
+        <section className="container">
+          <div className="grid gap-8 lg:grid-cols-[0.92fr_1.08fr] lg:items-start">
+            <div className="pt-6 md:pt-10 lg:pt-4">
+              <p className="section-kicker mb-5">Why it exists</p>
+              <p className="max-w-3xl text-3xl font-semibold leading-tight tracking-tight md:text-5xl">
+                Fish imagery should not feel like filler. It should carry the same specificity as the species behind it.
+              </p>
+              <div className="mt-8 max-w-2xl space-y-5 text-base leading-8 text-muted-foreground md:text-lg">
                 <p>
-                  <strong>Important:</strong> Images served through Ikanhub may be
-                  licensed under various Creative Commons or other open licenses.
-                  Always check the <code className="text-xs bg-muted px-1.5 py-0.5 rounded font-mono">license</code> field in the
-                  metadata JSON before using images in your projects, especially for
-                  commercial purposes.
+                  IkanHub keeps the simplicity of placeholder image URLs, then adds the context that visual products actually need: scientific names, attribution, locality, source pages, and licenses.
                 </p>
                 <p>
-                  Most FishBase images are licensed under{" "}
-                  <strong>CC BY-NC 3.0</strong> (Creative Commons
-                  Attribution-NonCommercial 3.0), which means:
+                  The name combines "Ikan" with "hub": a central place for fish photography and API-ready metadata.
                 </p>
-                <ul className="space-y-1.5 pl-5 list-disc">
-                  <li>You must give appropriate credit to the original author.</li>
-                  <li>You may not use the material for commercial purposes.</li>
-                  <li>Some images may have different license terms. Always verify.</li>
-                </ul>
               </div>
             </div>
-          </CardContent>
-        </Card>
-      </section>
 
-      {/* What you can do */}
-      <section className="space-y-6">
-        <h2 className="text-2xl font-bold tracking-tight">What you can do</h2>
-        <div className="grid sm:grid-cols-2 gap-4">
-          {[
-            {
-              icon: Image,
-              title: "Use in prototypes",
-              desc: "Quick placeholder images for mockups and wireframes.",
-            },
-            {
-              icon: Code,
-              title: "Build metadata-rich apps",
-              desc: "Access species, author, and license data via JSON endpoints.",
-            },
-            {
-              icon: BookOpenText,
-              title: "Educational projects",
-              desc: "Showcase fish biodiversity with properly attributed imagery.",
-            },
-            {
-              icon: Globe,
-              title: "API integrations",
-              desc: "Simple REST endpoints for any language or framework.",
-            },
-          ].map((feature) => (
-            <Card key={feature.title} className="glass-panel rounded-3xl card-elevate">
-              <CardContent className="p-5 space-y-3">
-                <div className="rounded-xl bg-primary/10 w-10 h-10 flex items-center justify-center">
-                  <feature.icon size={18} weight="bold" className="text-primary" />
+            <div className="relative min-h-[560px]">
+              <div className="absolute left-0 top-8 h-[56%] w-[68%] rounded-[2.4rem] border border-border/50 bg-background/65 p-2 shadow-card-glow backdrop-blur">
+                <div className="h-full overflow-hidden rounded-[1.9rem] bg-muted ring-1 ring-white/50 dark:ring-white/10">
+                <img
+                  src={`${API_URL}/fish/1200/760?t=about-mosaic-a-wide`}
+                  alt="Fish photograph from the IkanHub API"
+                  className="h-full w-full object-cover object-center"
+                  onError={(event) => {
+                    (event.currentTarget as HTMLImageElement).style.display = "none";
+                  }}
+                />
                 </div>
-                <h3 className="font-semibold text-sm">{feature.title}</h3>
-                <p className="text-xs text-muted-foreground leading-relaxed">{feature.desc}</p>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </section>
-
-      {/* Technical Details */}
-      <section className="space-y-6">
-        <h2 className="text-2xl font-bold tracking-tight">Technical Details</h2>
-        <Card className="glass-panel rounded-3xl">
-          <CardContent className="p-6 md:p-8 space-y-4 text-sm text-muted-foreground leading-relaxed">
-            <div className="grid sm:grid-cols-2 gap-4">
-              <div className="rounded-xl bg-surface-subtle border border-border/30 p-4">
-                <h4 className="font-semibold text-foreground mb-1">Image processing</h4>
-                <p>All images are resized on demand using Sharp. Images are output as JPEG at quality 85.</p>
               </div>
-              <div className="rounded-xl bg-surface-subtle border border-border/30 p-4">
-                <h4 className="font-semibold text-foreground mb-1">Caching</h4>
-                <p>Resized images are cached on disk for fast subsequent requests. Cache headers are set to 24 hours.</p>
+              <div className="absolute right-0 top-0 h-[42%] w-[44%] rounded-[1.9rem] border border-border/50 bg-background/65 p-2 shadow-card-glow backdrop-blur">
+                <div className="h-full overflow-hidden rounded-[1.35rem] bg-muted ring-1 ring-white/50 dark:ring-white/10">
+                <img
+                  src={`${API_URL}/fish/900/620?t=about-mosaic-b-wide`}
+                  alt="Fish photograph from the IkanHub collection"
+                  className="h-full w-full object-cover object-center"
+                  onError={(event) => {
+                    (event.currentTarget as HTMLImageElement).style.display = "none";
+                  }}
+                />
+                </div>
               </div>
-              <div className="rounded-xl bg-surface-subtle border border-border/30 p-4">
-                <h4 className="font-semibold text-foreground mb-1">Validation</h4>
-                <p>Dimensions are validated server-side. Width and height must be between 1 and 3000 pixels.</p>
-              </div>
-              <div className="rounded-xl bg-surface-subtle border border-border/30 p-4">
-                <h4 className="font-semibold text-foreground mb-1">Privacy</h4>
-                <p>We only log anonymous request data for analytics. No personal data is stored.</p>
+              <div className="absolute bottom-0 right-8 w-[62%] overflow-hidden rounded-[2rem] border border-white/10 bg-[#06283D] p-5 text-white shadow-card-glow">
+                <p className="font-mono text-xs uppercase tracking-[0.18em] text-white/48">
+                  GET /fish/random.json
+                </p>
+                <pre className="mt-4 overflow-x-auto font-mono text-xs leading-6 text-white/78">{`{
+  "scientificName": "Acanthurus coeruleus",
+  "commonName": "Blue tang",
+  "license": "CC BY-NC 3.0"
+}`}</pre>
               </div>
             </div>
-          </CardContent>
-        </Card>
-      </section>
-
-      {/* CTA */}
-      <Card className="relative overflow-hidden rounded-[2rem] border-none">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary/90 to-primary/80" />
-        <div className="relative z-10 p-10 md:p-14 text-center space-y-5">
-          <h2 className="display-title text-4xl md:text-5xl text-white">
-            Ready to get started?
-          </h2>
-          <p className="text-white/80 max-w-md mx-auto leading-relaxed">
-            Browse the collection or dive straight into the API.
-          </p>
-          <div className="flex items-center justify-center gap-3 pt-1">
-            <Button asChild variant="secondary" className="rounded-xl bg-white text-primary hover:bg-white/90">
-              <Link to="/docs">
-                View API docs
-                <ArrowRight size={16} weight="bold" className="ml-2" />
-              </Link>
-            </Button>
-            <Button
-              asChild
-              variant="outline"
-              className="rounded-xl border-white/20 text-white hover:bg-white/10"
-            >
-              <Link to="/explore">Browse images</Link>
-            </Button>
           </div>
-        </div>
-      </Card>
+        </section>
+
+        <section className="container py-24 md:py-32">
+          <div className="mx-auto max-w-4xl">
+            <div className="mb-16 max-w-3xl">
+              <p className="section-kicker mb-3">From archive to API</p>
+              <h2 className="display-title text-4xl md:text-6xl">
+                The product is the bridge between photography and structured data.
+              </h2>
+            </div>
+
+            <div className="relative">
+              {/* Vertical connector line */}
+              <div className="absolute left-[19px] top-0 h-full w-px bg-border/60 md:left-[21px]" />
+
+              <div className="space-y-12">
+                {workflow.map((item, i) => (
+                  <div key={item.label} className="relative grid gap-6 md:grid-cols-[48px_1fr]">
+                    {/* Circle marker */}
+                    <div className="relative z-10 flex h-10 w-10 items-center justify-center rounded-full border-2 border-border/60 bg-background md:h-11 md:w-11">
+                      <span className="font-mono text-xs font-bold text-primary">
+                        {String(i + 1).padStart(2, "0")}
+                      </span>
+                    </div>
+
+                    <div className="rounded-2xl border border-border/50 bg-background/55 p-6 shadow-card-glow backdrop-blur transition hover:-translate-y-0.5 md:p-8">
+                      <h3 className="text-xl font-semibold tracking-tight md:text-2xl">
+                        {item.title}
+                      </h3>
+                      <p className="mt-3 max-w-2xl leading-7 text-muted-foreground">
+                        {item.desc}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="relative overflow-hidden">
+          <div className="h-20 bg-[linear-gradient(180deg,transparent_0%,hsl(var(--surface-subtle)/0.55)_72%,hsl(var(--surface-subtle))_100%)] md:h-28" />
+          <div className="bg-surface-subtle py-16 md:py-20">
+            <div className="container">
+              <div className="mb-14 max-w-3xl">
+                <p className="section-kicker mb-3">Data source</p>
+                <h2 className="display-title text-4xl md:text-6xl">
+                  Curated from FishBase Best Photos.
+                </h2>
+              </div>
+
+              <div className="grid gap-6 lg:grid-cols-[1.3fr_0.7fr]">
+                {/* Left: main content card */}
+                <div className="rounded-[2rem] border border-border/50 bg-background/64 p-7 shadow-card-glow backdrop-blur md:p-9">
+                  <div className="flex items-center gap-4">
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                      <Database size={24} weight="bold" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                        Source
+                      </p>
+                      <p className="text-xl font-semibold tracking-tight">FishBase</p>
+                    </div>
+                  </div>
+                  <p className="mt-6 max-w-2xl text-lg leading-8 text-muted-foreground">
+                    The collection draws from FishBase Best Photos, a scientific database curated by biologists and ichthyologists worldwide. Each image is tied to a species record with verifiable metadata.
+                  </p>
+                  <div className="mt-8 flex flex-wrap gap-6">
+                    {[
+                      { label: "Output format", value: "JPEG + JSON" },
+                      { label: "License context", value: "Always included" },
+                      { label: "Attribution", value: "Preserved per record" },
+                    ].map((stat) => (
+                      <div key={stat.label} className="flex items-center gap-3">
+                        <div className="h-8 w-px bg-border/60" />
+                        <div>
+                          <p className="text-xs font-medium uppercase tracking-[0.12em] text-muted-foreground">
+                            {stat.label}
+                          </p>
+                          <p className="text-sm font-semibold">{stat.value}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Right: image card */}
+                <div className="relative overflow-hidden rounded-[2rem] border border-border/50 bg-muted">
+                  <img
+                    src={`${API_URL}/fish/800/800?t=about-data-source`}
+                    alt="Fish from the collection"
+                    className="h-full w-full object-cover"
+                    onError={(event) => {
+                      (event.currentTarget as HTMLImageElement).style.display = "none";
+                    }}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+                  <div className="absolute bottom-0 left-0 right-0 p-5">
+                    <p className="text-xs font-medium text-white/70">
+                      IkanHub preserves attribution and license metadata so builders can make informed usage decisions.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="h-20 bg-[linear-gradient(180deg,hsl(var(--surface-subtle))_0%,hsl(var(--surface-subtle)/0.55)_28%,transparent_100%)] md:h-28" />
+        </section>
+
+        <section className="container py-20 md:py-28">
+          <div className="mb-12 max-w-3xl">
+              <p className="section-kicker mb-3">Use cases</p>
+              <h2 className="display-title max-w-xl text-4xl md:text-5xl">
+                Built for teams that care how their interfaces feel.
+              </h2>
+          </div>
+            <div className="grid gap-5 md:grid-cols-2">
+              {uses.map((item) => (
+                <article key={item.title} className="group rounded-[1.6rem] border border-border/50 bg-background/55 p-6 backdrop-blur transition hover:-translate-y-1 hover:shadow-card-glow md:p-7">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary/10 text-primary transition group-hover:-translate-y-0.5">
+                    <item.icon size={21} weight="bold" />
+                  </div>
+                    <h3 className="mt-6 text-xl font-semibold tracking-tight">{item.title}</h3>
+                    <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">{item.desc}</p>
+                </article>
+              ))}
+            </div>
+        </section>
+
+        <section className="container">
+          <div className="grid overflow-hidden rounded-[2rem] bg-[#06283D] text-white lg:grid-cols-[0.9fr_1.1fr]">
+            <div className="relative min-h-[420px]">
+              <img
+                src={`${API_URL}/fish/900/900?t=about-license`}
+                alt="Fish photograph behind attribution section"
+                className="absolute inset-0 h-full w-full object-cover"
+                onError={(event) => {
+                  (event.currentTarget as HTMLImageElement).style.display = "none";
+                }}
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#06283D]/80 via-transparent to-transparent" />
+            </div>
+            <div className="p-10 md:p-14 lg:p-16">
+              <ShieldCheck size={28} weight="bold" className="text-[#8DE3C5]" />
+              <h2 className="display-title mt-6 text-4xl md:text-5xl">
+                Attribution is not an afterthought.
+              </h2>
+              <div className="mt-7 space-y-5 leading-8 text-white/74">
+                <p>
+                  Images may be licensed under Creative Commons or other open terms. Always check the <code className="rounded bg-white/10 px-1.5 py-0.5 font-mono text-xs text-white">license</code> field before usage.
+                </p>
+                <p>
+                  Most FishBase records use CC BY-NC 3.0 or similar terms. Credit the original author and verify each record when usage matters.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="container py-20 md:py-28">
+          <div className="mb-12 max-w-3xl">
+              <p className="section-kicker mb-3">Technical details</p>
+              <h2 className="display-title text-4xl md:text-5xl">
+                Small API surface. Useful defaults.
+              </h2>
+          </div>
+            <div className="grid gap-5 md:grid-cols-2">
+              {specs.map((item) => (
+                <div key={item.title} className="rounded-[1.6rem] border border-border/50 bg-surface-subtle/70 p-6 md:p-7">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                    <item.icon size={21} weight="bold" />
+                  </div>
+                  <h3 className="mt-6 text-lg font-semibold">{item.title}</h3>
+                  <p className="mt-2 text-sm leading-6 text-muted-foreground">{item.desc}</p>
+                </div>
+              ))}
+            </div>
+        </section>
+
+        <section className="container pb-20 md:pb-24">
+          <div className="grid gap-8 border-t border-border/60 pt-12 md:grid-cols-[1fr_auto] md:items-center">
+            <div>
+              <p className="section-kicker mb-3">Start</p>
+              <h2 className="display-title max-w-3xl text-4xl md:text-5xl">
+                Browse the collection or copy your first endpoint.
+              </h2>
+            </div>
+            <div className="flex flex-col gap-3 sm:flex-row md:justify-end">
+              <Button asChild className="rounded-xl">
+                <Link to="/docs">
+                  View API docs
+                  <ArrowRight size={16} weight="bold" className="ml-2" />
+                </Link>
+              </Button>
+              <Button asChild variant="outline" className="rounded-xl bg-background/60">
+                <Link to="/explore">Browse images</Link>
+              </Button>
+            </div>
+          </div>
+        </section>
       </div>
     </div>
   );

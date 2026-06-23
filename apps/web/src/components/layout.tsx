@@ -1,7 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/hooks/use-theme";
-import { Sun, Moon, Fish, List, X, ArrowRight, Waves, Code } from "@phosphor-icons/react";
+import { Sun, Moon, Fish, List, X, ArrowRight, Waves, Code, GithubLogoIcon } from "@phosphor-icons/react";
 import { useState } from "react";
 
 const navLinks = [
@@ -19,7 +19,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
   return (
     <div className="ocean-shell min-h-screen flex flex-col bg-background">
       <div className="noise-overlay" />
-      <header className="fixed inset-x-0 top-0 z-50 w-full px-3 py-3">
+      <header className="fixed inset-x-0 top-0 z-50 w-full py-3">
         <div className="container">
           <div className="glass-panel flex h-16 items-center justify-between rounded-2xl px-3.5 md:px-5">
           <Link
@@ -55,10 +55,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
           </nav>
 
           <div className="flex items-center gap-1.5">
-            <Button asChild size="sm" className="hidden rounded-xl md:inline-flex">
-              <Link to="/docs">
-                <Code size={14} weight="bold" className="mr-1.5" />
-                API
+            <Button asChild variant="ghost"
+            size="icon"
+            aria-label="Toggle theme"
+            className="rounded-xl">
+              <Link to="https://github.com/rizkhal">
+                  <GithubLogoIcon size={18} weight="bold" />
               </Link>
             </Button>
             <Button
@@ -112,11 +114,16 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
       <main className="relative z-10 flex-1">{children}</main>
 
-      <footer className="relative z-10 border-t border-border/50 bg-surface-subtle/80 overflow-hidden">
-        <div className="absolute inset-0 bg-ocean-pattern opacity-70 pointer-events-none" />
-        <div className="container py-12 md:py-16">
+      <footer className="relative z-10 overflow-hidden">
+        <div className="relative h-32 overflow-hidden md:h-44">
+          <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent_0%,hsl(var(--surface-subtle)/0.22)_34%,hsl(var(--surface-subtle)/0.78)_76%,hsl(var(--surface-subtle))_100%)]" />
+          <div className="absolute inset-0 opacity-35 [background-image:linear-gradient(hsl(var(--foreground)/0.045)_1px,transparent_1px),linear-gradient(90deg,hsl(var(--foreground)/0.045)_1px,transparent_1px)] [background-size:44px_44px] [mask-image:linear-gradient(180deg,transparent_0%,black_42%,black_100%)]" />
+        </div>
+        <div className="relative bg-surface-subtle/95">
+          <div className="absolute inset-0 opacity-30 [background-image:linear-gradient(hsl(var(--foreground)/0.04)_1px,transparent_1px),linear-gradient(90deg,hsl(var(--foreground)/0.04)_1px,transparent_1px)] [background-size:44px_44px] pointer-events-none" />
+          <div className="absolute left-1/2 top-0 h-px w-[min(760px,72vw)] -translate-x-1/2 bg-gradient-to-r from-transparent via-primary/35 to-transparent shadow-[0_0_22px_hsl(var(--primary)/0.28)] pointer-events-none" />
+        <div className="container relative pt-12 pb-12 md:pt-14 md:pb-16">
           <div className="relative grid md:grid-cols-4 gap-8">
-            {/* Brand */}
             <div className="md:col-span-2 space-y-4">
               <Link to="/" className="flex items-center gap-2.5 font-bold text-lg tracking-tight">
                 <div className="flex items-center justify-center w-8 h-8 rounded-xl bg-[linear-gradient(135deg,#06283D,#1363DF_55%,#47B5FF)] text-white">
@@ -136,7 +143,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
               </Link>
             </div>
 
-            {/* Links */}
             <div className="space-y-4">
               <h4 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
                 Product
@@ -158,7 +164,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
               </div>
             </div>
 
-            {/* Resources */}
             <div className="space-y-4">
               <h4 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
                 Resources
@@ -197,6 +202,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
               Ocean photography for software builders.
             </p>
           </div>
+        </div>
         </div>
       </footer>
     </div>
