@@ -103,87 +103,99 @@ export default function Explore() {
     <div className="relative">
       <section className="relative overflow-hidden bg-hero-gradient">
         <div className="absolute inset-0 bg-ocean-pattern pointer-events-none" />
-        <div className="absolute inset-x-0 bottom-0 h-44 bg-gradient-to-t from-background via-background/70 to-transparent pointer-events-none" />
-        <div className="container relative z-10 pt-28 pb-14 md:pt-32 md:pb-20">
-          <div className="grid gap-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-end">
-            <div className="max-w-3xl">
-              <p className="section-kicker mb-3">Explore</p>
-              <h1 className="display-title text-5xl md:text-7xl">Unsplash-style discovery for fish.</h1>
-              <p className="mt-6 max-w-2xl text-lg leading-8 text-muted-foreground">
-                Browse photographic fish records, inspect attribution, and copy image or metadata endpoints from the collection.
-              </p>
-            </div>
-            <div className="glass-panel rounded-3xl p-4 md:p-5">
-              <div className="flex flex-col gap-3 sm:flex-row">
-                <div className="relative flex-1">
-                  <MagnifyingGlass
-                    size={18}
-                    weight="bold"
-                    className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground"
-                  />
-                  <Input
-                    placeholder="Search species, common name, locality..."
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-                    className="h-12 rounded-2xl border-border/60 bg-background/70 pl-11 text-base shadow-none"
-                  />
-                </div>
-                <Button onClick={handleSearch} className="h-12 rounded-2xl px-6">
-                  Search
-                </Button>
-              </div>
-              <div className="mt-4 flex items-center gap-2 text-xs text-muted-foreground">
-                <SlidersHorizontal size={14} weight="bold" className="text-primary" />
-                {selectedSpecies ? `Filtered by ${selectedSpecies}` : "Showing the full image collection"}
-              </div>
-            </div>
+        <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-background via-background/70 to-transparent pointer-events-none" />
+        <div className="container relative z-10 pt-28 pb-28 md:pt-32 md:pb-32">
+          <div className="max-w-3xl">
+            <p className="section-kicker mb-3">Explore</p>
+            <h1 className="display-title text-5xl md:text-7xl">Unsplash-style discovery for fish.</h1>
+            <p className="mt-6 max-w-2xl text-lg leading-8 text-muted-foreground">
+              Browse photographic fish records, inspect attribution, and copy image or metadata endpoints from the collection.
+            </p>
           </div>
         </div>
       </section>
 
-      <div className="container relative z-20 -mt-8 pb-10 md:-mt-10 md:pb-14 space-y-10">
-        {/* Species chips */}
-        {species.length > 0 && (
-          <div className="flex flex-wrap gap-2 rounded-3xl border border-border/50 bg-background/50 p-3 backdrop-blur">
-            <Badge
-              variant={!selectedSpecies ? "default" : "outline"}
-              className="cursor-pointer rounded-xl px-3.5 py-2 text-xs font-medium"
-              onClick={() => {
-                setSelectedSpecies("");
-                setSearch("");
-                setPage(1);
-                setSearchParams({});
-              }}
-            >
-              All species
-            </Badge>
-            {displayedSpecies.map((s) => (
-              <Badge
-                key={s.slug}
-                variant={selectedSpecies === s.scientificName ? "default" : "outline"}
-                className="cursor-pointer rounded-xl px-3.5 py-2 text-xs font-medium transition-all hover:-translate-y-0.5 hover:border-primary/50"
-                onClick={() => {
-                  setSelectedSpecies(s.scientificName);
-                  setSearch(s.scientificName);
-                  setPage(1);
-                }}
-              >
-                {s.commonName || s.scientificName}
-                <span className="ml-1 opacity-60">({s.imageCount})</span>
-              </Badge>
-            ))}
-            {species.length > 12 && (
-              <Badge
-                variant="outline"
-                className="cursor-pointer rounded-xl px-3.5 py-2 text-xs font-medium"
-                onClick={() => setSpeciesExpanded(!speciesExpanded)}
-              >
-                {speciesExpanded ? "Show less" : `+${species.length - 12} more`}
-              </Badge>
+      {/* Floating search + filter toolbar */}
+      <div className="relative z-20">
+        <div className="container">
+          <div className="-mt-14 md:-mt-16 mb-10 md:mb-14 rounded-[2rem] border border-border/50 bg-card/85 shadow-card-glow backdrop-blur-xl p-5 md:p-6">
+            <div className="flex flex-col gap-3 sm:flex-row">
+              <div className="relative flex-1">
+                <MagnifyingGlass
+                  size={20}
+                  weight="bold"
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground"
+                />
+                <Input
+                  placeholder="Search species, common name, locality..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                  className="h-12 rounded-2xl border-border/60 bg-background/70 pl-12 text-base shadow-none"
+                />
+              </div>
+              <Button onClick={handleSearch} className="h-12 rounded-2xl px-6 shrink-0">
+                Search
+              </Button>
+            </div>
+
+            <div className="mt-4 flex items-center gap-3">
+              <SlidersHorizontal size={14} weight="bold" className="text-primary shrink-0" />
+              <span className="text-xs text-muted-foreground">
+                {selectedSpecies
+                  ? `Filtered by ${selectedSpecies}`
+                  : "Showing the full image collection"}
+              </span>
+            </div>
+
+            {/* Species chips */}
+            {species.length > 0 && (
+              <div className="mt-4 pt-4 border-t border-border/40">
+                <div className="flex flex-wrap gap-2">
+                  <Badge
+                    variant={!selectedSpecies ? "default" : "outline"}
+                    className="cursor-pointer rounded-xl px-3.5 py-2 text-xs font-medium transition-all hover:-translate-y-0.5"
+                    onClick={() => {
+                      setSelectedSpecies("");
+                      setSearch("");
+                      setPage(1);
+                      setSearchParams({});
+                    }}
+                  >
+                    All species
+                  </Badge>
+                  {displayedSpecies.map((s) => (
+                    <Badge
+                      key={s.slug}
+                      variant={selectedSpecies === s.scientificName ? "default" : "outline"}
+                      className="cursor-pointer rounded-xl px-3.5 py-2 text-xs font-medium transition-all hover:-translate-y-0.5 hover:border-primary/50"
+                      onClick={() => {
+                        setSelectedSpecies(s.scientificName);
+                        setSearch(s.scientificName);
+                        setPage(1);
+                      }}
+                    >
+                      {s.commonName || s.scientificName}
+                      <span className="ml-1.5 opacity-60">({s.imageCount})</span>
+                    </Badge>
+                  ))}
+                  {species.length > 12 && (
+                    <Badge
+                      variant="outline"
+                      className="cursor-pointer rounded-xl px-3.5 py-2 text-xs font-medium"
+                      onClick={() => setSpeciesExpanded(!speciesExpanded)}
+                    >
+                      {speciesExpanded ? "Show less" : `+${species.length - 12} more`}
+                    </Badge>
+                  )}
+                </div>
+              </div>
             )}
           </div>
-        )}
+        </div>
+      </div>
+
+      <div className="container pb-10 md:pb-14 space-y-10">
 
       {/* Grid */}
       {loading ? (
