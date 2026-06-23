@@ -87,7 +87,7 @@ export default function About() {
       <div className="relative z-20 -mt-10 pb-16">
         <section className="container">
           <div className="grid gap-8 lg:grid-cols-[0.92fr_1.08fr] lg:items-start">
-            <div className="pt-6 md:pt-10 lg:pt-4">
+            <div className="pt-12 md:pt-16 lg:pt-20">
               <p className="section-kicker mb-5">Why it exists</p>
               <p className="max-w-3xl text-3xl font-semibold leading-tight tracking-tight md:text-5xl">
                 Fish imagery should not feel like filler. It should carry the same specificity as the species behind it.
@@ -151,16 +151,19 @@ export default function About() {
             </div>
 
             <div className="relative">
-              {/* Vertical connector line */}
-              <div className="absolute left-[19px] top-0 h-full w-px bg-border/60 md:left-[21px]" />
-
               <div className="space-y-12">
                 {workflow.map((item, i) => (
-                  <div key={item.label} className="relative grid gap-6 md:grid-cols-[48px_1fr]">
+                  <div key={item.label} className="relative grid gap-6 md:grid-cols-[48px_1fr] md:items-center">
+                                      {/* Connector line segment: from circle center through gap to next item */}
+                                      {i < workflow.length - 1 ? (
+                                                                              <div className="absolute left-[19px] top-5 h-[calc(100%+48px)] w-px bg-border/60 md:left-[21px] md:top-1/2" />
+                                                                            ) : (
+                                                                              <div className="absolute left-[19px] top-5 h-[calc(100%-20px)] w-px bg-border/60 md:hidden" />
+                                                                            )}
                     {/* Circle marker */}
-                    <div className="relative z-10 flex h-10 w-10 items-center justify-center rounded-full border-2 border-border/60 bg-background md:h-11 md:w-11">
-                      <span className="font-mono text-xs font-bold text-primary">
-                        {String(i + 1).padStart(2, "0")}
+                    <div className="relative z-10 grid h-10 w-10 shrink-0 place-items-center rounded-full border-2 border-border/60 bg-background md:h-11 md:w-11">
+                                          <span className="font-mono text-sm font-bold leading-none text-primary">
+                                              {String(i + 1).padStart(2, "0")}
                       </span>
                     </div>
 

@@ -5,21 +5,18 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
-  ArrowRight,
-  ArrowsOut,
-  Check,
-  Code,
   Copy,
-  Database,
-  Fish,
-  FishSimple,
-  GlobeHemisphereWest,
+  Code,
+  Check,
   Image,
-  Lightning,
-  Shuffle,
-  Sparkle,
-  TerminalWindow,
   Waves,
+  Shuffle,
+  Database,
+  ArrowsOut,
+  Lightning,
+  FishSimple,
+  ArrowRight,
+  TerminalWindow,
 } from "@phosphor-icons/react";
 
 const API_URL = import.meta.env.VITE_API_URL || "";
@@ -145,7 +142,7 @@ export default function Landing() {
                 <p className="mt-1 text-sm font-semibold italic">{randomFish?.scientificName || "Chaetodon lunula"}</p>
                 <p className="text-xs text-muted-foreground">{randomFish?.commonName || "Blue tang"}</p>
               </div>
-              <div className="absolute -left-4 bottom-24 z-20 hidden rounded-2xl premium-code border p-4 text-xs md:block float-card-delay" style={{ "--float-rotate": "-2deg" } as CSSProperties}>
+              <div className="absolute -left-4 bottom-36 z-20 hidden rounded-2xl premium-code border p-4 text-xs md:block float-card-delay" style={{ "--float-rotate": "-5deg" } as CSSProperties}>
                 <div className="mb-2 flex items-center gap-2 text-cyan-200">
                   <TerminalWindow size={14} weight="bold" />
                   <span className="font-mono">GET {generatedUrl}</span>
@@ -171,10 +168,6 @@ export default function Landing() {
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#06283D]/80 via-[#06283D]/10 to-transparent" />
                   <div className="absolute bottom-5 left-5 right-5 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-                    <div>
-                      <p className="text-xs font-medium uppercase tracking-[0.2em] text-white/60">Generated image</p>
-                      <p className="mt-1 text-xl font-semibold text-white">Visual API preview</p>
-                    </div>
                     <Button variant="secondary" size="sm" onClick={() => setLiveImgKey((k) => k + 1)} className="rounded-xl bg-white/90 text-[#06283D] hover:bg-white">
                       <Shuffle size={14} weight="bold" className="mr-2" />
                       New image
@@ -275,7 +268,7 @@ export default function Landing() {
         </div>
       </section>
 
-      <section className="container py-20 md:py-28">
+      <section className="container pt-20 md:pt-28">
         <div className="grid gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:items-start">
           <div className="space-y-5">
             <p className="section-kicker">Developer experience</p>
@@ -290,12 +283,8 @@ export default function Landing() {
               </Link>
             </Button>
           </div>
-          <div className="glass-panel overflow-hidden rounded-3xl p-4">
-            <div className="grid gap-4 md:grid-cols-[0.9fr_1.1fr]">
-              <div className="overflow-hidden rounded-2xl bg-muted">
-                <img src={`${API_URL}/fish/740/860?t=playground`} alt="API playground fish preview" className="h-full min-h-[360px] w-full object-cover" />
-              </div>
-              <div className="space-y-4">
+          <div className="glass-panel overflow-hidden rounded-3xl p-3 sm:p-4">
+            <div className="space-y-4">
                 <div className="rounded-2xl border border-border/50 bg-background/70 p-4">
                   <p className="mb-2 text-xs font-medium text-muted-foreground">Endpoint</p>
                   <div className="flex items-center gap-2 rounded-xl bg-muted px-3 py-2">
@@ -306,16 +295,16 @@ export default function Landing() {
                   </div>
                 </div>
                 <Tabs defaultValue="HTML">
-                  <TabsList className="mb-3 rounded-xl bg-muted p-1">
+                  <TabsList className="mb-3 rounded-xl bg-muted p-1 overflow-x-auto flex-nowrap gap-0">
                     {codeExamples.map((ex) => (
-                      <TabsTrigger key={ex.label} value={ex.label} className="rounded-lg text-xs">
+                      <TabsTrigger key={ex.label} value={ex.label} className="rounded-lg text-xs whitespace-nowrap px-2.5">
                         {ex.label}
                       </TabsTrigger>
                     ))}
                   </TabsList>
                   {codeExamples.map((ex) => (
                     <TabsContent key={ex.label} value={ex.label}>
-                      <pre className="premium-code min-h-[190px] overflow-x-auto rounded-2xl border p-4 text-sm leading-7">
+                      <pre className="premium-code min-h-[80px] overflow-x-auto rounded-2xl border p-4 text-sm leading-7">
                         <code>{ex.code}</code>
                       </pre>
                     </TabsContent>
@@ -332,85 +321,6 @@ export default function Landing() {
   "url": "/fish/id/42/800/600"
 }`}</pre>
                 </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="container pb-20 md:pb-28">
-        <div className="glass-panel relative overflow-hidden rounded-[2rem] p-3 md:p-4">
-          <div className="grid gap-4 lg:grid-cols-[1.05fr_0.95fr]">
-            <div className="relative min-h-[420px] overflow-hidden rounded-[1.6rem] bg-[#06283D] p-7 text-white md:p-10">
-              <img
-                src={`${API_URL}/fish/1200/760?t=cta`}
-                alt="Fish image generated by IkanHub"
-                className="absolute inset-0 h-full w-full object-cover opacity-70"
-              />
-              <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(6,40,61,.96),rgba(6,40,61,.62)_48%,rgba(6,40,61,.18)),radial-gradient(circle_at_20%_0%,rgba(71,181,255,.34),transparent_24rem)]" />
-              <div className="relative flex h-full max-w-xl flex-col justify-between">
-                <div>
-                  <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-medium text-white/78 backdrop-blur">
-                    <Sparkle size={14} weight="fill" className="text-[#8DE3C5]" />
-                    Ready for prototypes, docs, and data products
-                  </div>
-                  <h2 className="display-title text-4xl md:text-6xl">Start with one URL.</h2>
-                  <p className="mt-5 max-w-lg text-base leading-7 text-white/74 md:text-lg">
-                    Pull real fish photography into your interface, then fetch species metadata when your product needs context.
-                  </p>
-                </div>
-                <div className="mt-10 flex flex-col gap-3 sm:flex-row">
-                  <Button asChild size="lg" className="rounded-xl bg-white text-[#06283D] hover:bg-white/90">
-                    <Link to="/docs">
-                      View docs
-                      <ArrowRight size={16} weight="bold" className="ml-2" />
-                    </Link>
-                  </Button>
-                  <Button asChild variant="outline" size="lg" className="rounded-xl border-white/20 bg-white/5 text-white hover:bg-white/10">
-                    <Link to="/explore">Browse species</Link>
-                  </Button>
-                </div>
-              </div>
-            </div>
-
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
-              <div className="rounded-[1.6rem] border border-border/50 bg-background/72 p-5">
-                <div className="mb-4 flex items-center justify-between">
-                  <div>
-                    <p className="text-xs font-medium text-muted-foreground">Image endpoint</p>
-                    <p className="mt-1 text-lg font-semibold tracking-tight">Generate any crop</p>
-                  </div>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="rounded-xl"
-                    onClick={() => copyToClipboard(`${API_URL}/fish/1200/760`, "cta-image")}
-                    aria-label="Copy CTA image endpoint"
-                  >
-                    {copied === "cta-image" ? <Check size={16} className="text-emerald-500" /> : <Copy size={16} />}
-                  </Button>
-                </div>
-                <div className="rounded-2xl bg-muted px-3 py-3">
-                  <code className="block truncate font-mono text-sm">{API_URL}/fish/1200/760</code>
-                </div>
-              </div>
-
-              <div className="rounded-[1.6rem] border border-border/50 bg-background/72 p-5">
-                <div className="mb-4 flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary/10 text-primary">
-                    <Database size={19} weight="bold" />
-                  </div>
-                  <div>
-                    <p className="text-xs font-medium text-muted-foreground">Metadata endpoint</p>
-                    <p className="text-lg font-semibold tracking-tight">Use the data layer</p>
-                  </div>
-                </div>
-                <pre className="premium-code overflow-x-auto rounded-2xl border p-4 text-xs leading-6">{`{
-  "scientificName": "Acanthurus coeruleus",
-  "commonName": "Blue tang",
-  "license": "CC BY-NC 3.0"
-}`}</pre>
-              </div>
             </div>
           </div>
         </div>
