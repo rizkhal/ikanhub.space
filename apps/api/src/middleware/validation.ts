@@ -1,4 +1,5 @@
 import { Context } from "hono";
+import type { ContentfulStatusCode } from "hono/utils/http-status";
 import { z } from "zod";
 
 export const dimensionSchema = z.object({
@@ -23,6 +24,6 @@ export function validateDimensions(width: number, height: number): string | null
   return null;
 }
 
-export function handleError(c: Context, message: string, status = 400) {
+export function handleError(c: Context, message: string, status: ContentfulStatusCode = 400) {
   return c.json({ error: message }, status);
 }

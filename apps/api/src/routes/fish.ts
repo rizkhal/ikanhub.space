@@ -114,7 +114,7 @@ fishRouter.get("/species/:slug/:width/:height", async (c) => {
   c.header("Cache-Control", "public, max-age=86400");
   c.header("X-Ikanhub-Image-Id", String(result.image.id));
   c.header("X-Ikanhub-Species", result.image.slug);
-  return c.body(result.buffer);
+  return c.body(result.buffer as unknown as Uint8Array<ArrayBuffer>);
 });
 
 // GET /fish/id/:id (supports /fish/id/:id.json and /fish/id/:id)
@@ -179,7 +179,7 @@ fishRouter.get("/id/:id/:width/:height", async (c) => {
     c.header("Cache-Control", "public, max-age=86400");
     c.header("X-Ikanhub-Image-Id", String(image.id));
     c.header("X-Ikanhub-Species", image.slug);
-    return c.body(buffer);
+    return c.body(buffer as unknown as Uint8Array<ArrayBuffer>);
   } catch {
     return handleError(c, "Image file not found on disk", 404);
   }
@@ -211,7 +211,7 @@ fishRouter.get("/:width/:height", async (c) => {
   c.header("Cache-Control", "public, max-age=86400");
   c.header("X-Ikanhub-Image-Id", String(result.image.id));
   c.header("X-Ikanhub-Species", result.image.slug);
-  return c.body(result.buffer);
+  return c.body(result.buffer as unknown as Uint8Array<ArrayBuffer>);
 });
 
 // GET /fish/:size
@@ -236,7 +236,7 @@ fishRouter.get("/:size", async (c) => {
   c.header("Cache-Control", "public, max-age=86400");
   c.header("X-Ikanhub-Image-Id", String(result.image.id));
   c.header("X-Ikanhub-Species", result.image.slug);
-  return c.body(result.buffer);
+  return c.body(result.buffer as unknown as Uint8Array<ArrayBuffer>);
 });
 
 export default fishRouter;
